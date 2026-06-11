@@ -93,4 +93,31 @@ O `ProfissionalServiceTest` cobre:
 - buscar profissional por id;
 - lançar erro quando o profissional não for encontrado.
 
-## Ideia: pecerbi que seria interssante partes do sitema terem indicadores unicos fora o ID, escolhi  CPF e CRM 
+O `AgendamentoServiceTest` cobre:
+
+- criar agendamento quando o horário estiver disponível;
+- impedir agendamento em data/hora passada;
+- impedir agendamento quando o paciente já tiver agendamento ativo no mesmo horário;
+- impedir agendamento quando o profissional já tiver agendamento ativo no mesmo horário;
+- listar agendamentos;
+- buscar agendamento por id;
+- lançar erro quando o agendamento não for encontrado;
+- cancelar agendamento.
+
+## Ideia
+
+Percebi que seria interessante algumas partes do sistema terem identificadores únicos além do ID interno. Por isso, escolhi CPF para pacientes e CRM para profissionais.
+
+## Regras de agendamento
+
+O agendamento deve ser criado a partir de um paciente existente, um profissional existente e uma data/hora.
+
+Regras iniciais:
+
+- não é permitido criar agendamento para data/hora passada;
+- um paciente não pode ter dois agendamentos ativos no mesmo horário;
+- um profissional não pode ter dois agendamentos ativos no mesmo horário;
+- todo novo agendamento começa com status `AGENDADO`;
+- agendamentos cancelados recebem o status `CANCELADO`.
+
+As validações de conflito consideram apenas agendamentos com status `AGENDADO`.
