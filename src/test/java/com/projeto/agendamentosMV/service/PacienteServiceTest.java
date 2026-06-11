@@ -1,0 +1,83 @@
+package com.projeto.agendamentosMV.service;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import com.projeto.agendamentosMV.entity.Paciente;
+import com.projeto.agendamentosMV.repository.PacienteRepository;
+
+@ExtendWith(MockitoExtension.class)
+class PacienteServiceTest {
+
+    @Mock
+    private PacienteRepository pacienteRepository;
+
+    @InjectMocks
+    private PacienteService pacienteService;
+
+    @Test
+    void deveSalvarPaciente() {
+        Paciente paciente = new Paciente(null, "Maria Silva", 30, "Feminino", "Rua A", List.of());
+        Paciente pacienteSalvo = new Paciente(1L, "Maria Silva", 30, "Feminino", "Rua A", List.of());
+
+        when(pacienteRepository.save(paciente)).thenReturn(pacienteSalvo);
+
+        Paciente resultado = pacienteService.salvar(paciente);
+
+        assertEquals(1L, resultado.getId());
+        assertEquals("Maria Silva", resultado.getNome());
+        verify(pacienteRepository).save(paciente);
+    }
+
+    @Test
+    void deveListarPacientes() {
+        List<Paciente> pacientes = List.of(
+                new Paciente(1L, "Maria Silva", 30, "Feminino", "Rua A", List.of()),
+                new Paciente(2L, "Joao Souza", 41, "Masculino", "Rua B", List.of()));
+
+        when(pacienteRepository.findAll()).thenReturn(pacientes);
+
+        List<Paciente> resultado = pacienteService.listar();
+
+        assertEquals(2, resultado.size());
+        assertSame(pacientes, resultado);
+        verify(pacienteRepository).findAll();
+    }
+
+    @Test
+    void deveBuscarPacientePorId() {
+        Paciente paciente = new Paciente(1L, "Maria Silva", 30, "Feminino", "Rua A", List.of());
+
+        when(pacienteRepository.findById(1L)).thenReturn(Optional.of(paciente));
+
+        Paciente resultado = pacienteService.buscarPorId(1L);
+
+        assertEquals(1L, resultado.getId());
+        assertEquals("Maria Silva", resultado.getNome());
+        verify(pacienteRepository).findById(1L);
+    }
+
+    @Test
+    void deveLancarErroQuandoPacienteNaoForEncontrado() {
+        when(pacienteRepository.findById(99L)).thenReturn(Optional.empty());
+
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> pacienteService.buscarPorId(99L));
+
+        assertEquals("Paciente não encontrado.", exception.getMessage());
+        verify(pacienteRepository).findById(99L);
+    }
+}

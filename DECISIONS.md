@@ -58,3 +58,9 @@ Valores iniciais:
 - `AGENDADO`;
 - `CANCELADO`;
 - `REALIZADO`.
+
+## Desenvolvimento orientado a testes
+
+O projeto seguirá uma abordagem orientada a testes(TDD) nas regras de negócio.
+
+O auxílio de IA será usado para a escrita de testes 
