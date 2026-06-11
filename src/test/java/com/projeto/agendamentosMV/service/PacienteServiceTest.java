@@ -29,8 +29,8 @@ class PacienteServiceTest {
 
     @Test
     void deveSalvarPaciente() {
-        Paciente paciente = new Paciente(null, "Maria Silva", 30, "Feminino", "Rua A", List.of());
-        Paciente pacienteSalvo = new Paciente(1L, "Maria Silva", 30, "Feminino", "Rua A", List.of());
+        Paciente paciente = new Paciente(null, "Maria Silva", "12345678900", 30, "Feminino", "Rua A", List.of());
+        Paciente pacienteSalvo = new Paciente(1L, "Maria Silva", "12345678900", 30, "Feminino", "Rua A", List.of());
 
         when(pacienteRepository.save(paciente)).thenReturn(pacienteSalvo);
 
@@ -38,14 +38,15 @@ class PacienteServiceTest {
 
         assertEquals(1L, resultado.getId());
         assertEquals("Maria Silva", resultado.getNome());
+        assertEquals("12345678900", resultado.getCpf());
         verify(pacienteRepository).save(paciente);
     }
 
     @Test
     void deveListarPacientes() {
         List<Paciente> pacientes = List.of(
-                new Paciente(1L, "Maria Silva", 30, "Feminino", "Rua A", List.of()),
-                new Paciente(2L, "Joao Souza", 41, "Masculino", "Rua B", List.of()));
+                new Paciente(1L, "Maria Silva", "12345678900", 30, "Feminino", "Rua A", List.of()),
+                new Paciente(2L, "Joao Souza", "98765432100", 41, "Masculino", "Rua B", List.of()));
 
         when(pacienteRepository.findAll()).thenReturn(pacientes);
 
@@ -58,7 +59,7 @@ class PacienteServiceTest {
 
     @Test
     void deveBuscarPacientePorId() {
-        Paciente paciente = new Paciente(1L, "Maria Silva", 30, "Feminino", "Rua A", List.of());
+        Paciente paciente = new Paciente(1L, "Maria Silva", "12345678900", 30, "Feminino", "Rua A", List.of());
 
         when(pacienteRepository.findById(1L)).thenReturn(Optional.of(paciente));
 

@@ -41,6 +41,16 @@ As entidades iniciais do domínio são:
 - `Profissional`;
 - `Agendamento`.
 
+## Identificadores únicos
+
+Foram adicionados identificadores únicos para evitar cadastros duplicados das entidades principais.
+
+O `Paciente` possui `cpf`.
+
+O `Profissional` possui `crm`.
+
+Esses campos são obrigatórios e únicos no banco de dados.
+
 ## Relacionamentos
 
 Um paciente pode ter vários agendamentos.
@@ -61,6 +71,26 @@ Valores iniciais:
 
 ## Desenvolvimento orientado a testes
 
-O projeto seguirá uma abordagem orientada a testes(TDD) nas regras de negócio.
+O projeto seguirá uma abordagem orientada a testes (TDD) nas regras de negócio.
 
-O auxílio de IA será usado para a escrita de testes 
+O auxílio de IA será usado para apoiar a escrita dos testes, revisar decisões técnicas e sugerir melhorias.
+
+## Cobertura inicial de testes
+
+Os primeiros testes unitários foram criados para a camada de `service`, usando mocks dos repositories.
+
+O `PacienteServiceTest` cobre:
+
+- salvar paciente;
+- listar pacientes;
+- buscar paciente por id;
+- lançar erro quando o paciente não for encontrado.
+
+O `ProfissionalServiceTest` cobre:
+
+- salvar profissional;
+- listar profissionais;
+- buscar profissional por id;
+- lançar erro quando o profissional não for encontrado.
+
+## Ideia: pecerbi que seria interssante partes do sitema terem indicadores unicos fora o ID, escolhi  CPF e CRM 
