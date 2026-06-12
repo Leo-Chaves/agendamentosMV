@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -46,5 +47,11 @@ public class ProfissionalController {
     @GetMapping("/{id}")
     public ProfissionalResponse buscarPorId(@PathVariable Long id) {
         return ProfissionalResponse.from(profissionalService.buscarPorId(id));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> inativar(@PathVariable Long id) {
+        profissionalService.inativar(id);
+        return ResponseEntity.noContent().build();
     }
 }

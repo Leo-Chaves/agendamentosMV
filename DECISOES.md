@@ -148,3 +148,18 @@ Regras iniciais:
 As validações de conflito consideram apenas agendamentos com status `AGENDADO`.
 
 Agendamentos com status `CANCELADO` ou `REALIZADO` são tratados como histórico e não vão bloquear novos agendamentos no mesmo horário.
+
+## Inativação de pacientes e profissionais
+
+Pacientes e profissionais não são removidos fisicamente pelo sistema.
+
+O endpoint de exclusão faz uma inativação lógica, alterando o campo `ativo` para `false`.
+
+Motivos:
+
+- preservar o histórico de agendamentos;
+- evitar perda de rastreabilidade;
+- impedir inconsistência em registros antigos;
+- permitir que os dados continuem disponíveis para consulta.
+
+Pacientes ou profissionais inativos não podem receber novos agendamentos.

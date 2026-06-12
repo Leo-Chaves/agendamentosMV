@@ -6,13 +6,15 @@ public record ProfissionalResponse(
         Long id,
         String nome,
         String crm,
-        String area) {
+        String area,
+        Boolean ativo) {
 
     public static ProfissionalResponse from(Profissional profissional) {
         return new ProfissionalResponse(
                 profissional.getId(),
                 profissional.getNome(),
                 profissional.getCrm(),
-                profissional.getArea());
+                profissional.getArea(),
+                profissional.getAtivo());
     }
 }

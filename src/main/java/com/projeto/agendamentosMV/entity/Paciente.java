@@ -14,7 +14,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -23,7 +22,6 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 public class Paciente {
 
     @Id
@@ -46,7 +44,22 @@ public class Paciente {
     @NotBlank
     private String endereco;
 
+    @Column(nullable = false)
+    private Boolean ativo = true;
+
     @JsonIgnore
     @OneToMany(mappedBy = "paciente", cascade = CascadeType.ALL)
     private List<Agendamento> agendamentos = new ArrayList<>();
+
+    public Paciente(Long id, String nome, String cpf, Integer idade, String sexo, String endereco,
+            List<Agendamento> agendamentos) {
+        this.id = id;
+        this.nome = nome;
+        this.cpf = cpf;
+        this.idade = idade;
+        this.sexo = sexo;
+        this.endereco = endereco;
+        this.ativo = true;
+        this.agendamentos = agendamentos;
+    }
 }

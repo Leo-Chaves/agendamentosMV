@@ -1,6 +1,7 @@
 package com.projeto.agendamentosMV.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
@@ -80,5 +81,18 @@ class PacienteServiceTest {
 
         assertEquals("Paciente não encontrado.", exception.getMessage());
         verify(pacienteRepository).findById(99L);
+    }
+
+    @Test
+    void deveInativarPacienteSemRemoverRegistro() {
+        Paciente paciente = new Paciente(1L, "Maria Silva", "12345678900", 30, "Feminino", "Rua A", List.of());
+
+        when(pacienteRepository.findById(1L)).thenReturn(Optional.of(paciente));
+        when(pacienteRepository.save(paciente)).thenReturn(paciente);
+
+        Paciente resultado = pacienteService.inativar(1L);
+
+        assertFalse(resultado.getAtivo());
+        verify(pacienteRepository).save(paciente);
     }
 }

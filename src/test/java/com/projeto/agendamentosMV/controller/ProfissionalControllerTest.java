@@ -4,6 +4,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -105,5 +106,18 @@ class ProfissionalControllerTest {
                 .andExpect(jsonPath("$.mensagem").value("Dados inválidos."));
 
         verify(profissionalService, never()).salvar(any(Profissional.class));
+    }
+
+    @Test
+    void deveInativarProfissional() throws Exception {
+        Profissional profissional = new Profissional(1L, "Ana Costa", "CRM12345", "Cardiologia", List.of());
+        profissional.setAtivo(false);
+
+        when(profissionalService.inativar(1L)).thenReturn(profissional);
+
+        mockMvc.perform(delete("/profissionais/1"))
+                .andExpect(status().isNoContent());
+
+        verify(profissionalService).inativar(1L);
     }
 }

@@ -27,4 +27,10 @@ public class PacienteService {
         return pacienteRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Paciente não encontrado."));
     }
+
+    public Paciente inativar(Long id) {
+        Paciente paciente = buscarPorId(id);
+        paciente.setAtivo(false);
+        return pacienteRepository.save(paciente);
+    }
 }

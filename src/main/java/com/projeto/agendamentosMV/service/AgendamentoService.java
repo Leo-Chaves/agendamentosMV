@@ -26,6 +26,8 @@ public class AgendamentoService {
         Paciente paciente = pacienteService.buscarPorId(pacienteId);
         Profissional profissional = profissionalService.buscarPorId(profissionalId);
 
+        validarPacienteAtivo(paciente);
+        validarProfissionalAtivo(profissional);
         validarDataHora(dataHora);
         validarDisponibilidade(pacienteId, profissionalId, dataHora);
 
@@ -94,6 +96,18 @@ public class AgendamentoService {
     private void validarMotivoCancelamento(String motivoCancelamento) {
         if (motivoCancelamento == null || motivoCancelamento.isBlank()) {
             throw new IllegalArgumentException("Motivo do cancelamento deve ser informado.");
+        }
+    }
+
+    private void validarPacienteAtivo(Paciente paciente) {
+        if (Boolean.FALSE.equals(paciente.getAtivo())) {
+            throw new IllegalArgumentException("Paciente inativo não pode receber agendamento.");
+        }
+    }
+
+    private void validarProfissionalAtivo(Profissional profissional) {
+        if (Boolean.FALSE.equals(profissional.getAtivo())) {
+            throw new IllegalArgumentException("Profissional inativo não pode receber agendamento.");
         }
     }
 

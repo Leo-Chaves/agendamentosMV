@@ -13,7 +13,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -22,7 +21,6 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 public class Profissional {
 
     @Id
@@ -39,7 +37,19 @@ public class Profissional {
     @NotBlank
     private String area;
 
+    @Column(nullable = false)
+    private Boolean ativo = true;
+
     @JsonIgnore
     @OneToMany(mappedBy = "profissional", cascade = CascadeType.ALL)
     private List<Agendamento> agendamentos = new ArrayList<>();
+
+    public Profissional(Long id, String nome, String crm, String area, List<Agendamento> agendamentos) {
+        this.id = id;
+        this.nome = nome;
+        this.crm = crm;
+        this.area = area;
+        this.ativo = true;
+        this.agendamentos = agendamentos;
+    }
 }

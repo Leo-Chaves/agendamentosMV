@@ -126,6 +126,42 @@ class AgendamentoServiceTest {
     }
 
     @Test
+    void deveLancarErroQuandoPacienteEstiverInativo() {
+        LocalDateTime dataHora = LocalDateTime.of(2026, 7, 10, 14, 0);
+        Paciente paciente = new Paciente(1L, "Maria Silva", "12345678900", 30, "Feminino", "Rua A", List.of());
+        Profissional profissional = new Profissional(1L, "Ana Costa", "CRM12345", "Cardiologia", List.of());
+        paciente.setAtivo(false);
+
+        when(pacienteService.buscarPorId(1L)).thenReturn(paciente);
+        when(profissionalService.buscarPorId(1L)).thenReturn(profissional);
+
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> agendamentoService.agendar(1L, 1L, dataHora));
+
+        assertEquals("Paciente inativo não pode receber agendamento.", exception.getMessage());
+        verify(agendamentoRepository, never()).save(any(Agendamento.class));
+    }
+
+    @Test
+    void deveLancarErroQuandoProfissionalEstiverInativo() {
+        LocalDateTime dataHora = LocalDateTime.of(2026, 7, 10, 14, 0);
+        Paciente paciente = new Paciente(1L, "Maria Silva", "12345678900", 30, "Feminino", "Rua A", List.of());
+        Profissional profissional = new Profissional(1L, "Ana Costa", "CRM12345", "Cardiologia", List.of());
+        profissional.setAtivo(false);
+
+        when(pacienteService.buscarPorId(1L)).thenReturn(paciente);
+        when(profissionalService.buscarPorId(1L)).thenReturn(profissional);
+
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> agendamentoService.agendar(1L, 1L, dataHora));
+
+        assertEquals("Profissional inativo não pode receber agendamento.", exception.getMessage());
+        verify(agendamentoRepository, never()).save(any(Agendamento.class));
+    }
+
+    @Test
     void deveListarAgendamentos() {
         List<Agendamento> agendamentos = List.of(new Agendamento());
 

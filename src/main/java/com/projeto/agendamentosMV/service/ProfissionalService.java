@@ -27,4 +27,10 @@ public class ProfissionalService {
         return profissionalRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Profissional não encontrado."));
     }
+
+    public Profissional inativar(Long id) {
+        Profissional profissional = buscarPorId(id);
+        profissional.setAtivo(false);
+        return profissionalRepository.save(profissional);
+    }
 }

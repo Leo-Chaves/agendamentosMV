@@ -1,6 +1,7 @@
 package com.projeto.agendamentosMV.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
@@ -81,5 +82,18 @@ class ProfissionalServiceTest {
 
         assertEquals("Profissional não encontrado.", exception.getMessage());
         verify(profissionalRepository).findById(99L);
+    }
+
+    @Test
+    void deveInativarProfissionalSemRemoverRegistro() {
+        Profissional profissional = new Profissional(1L, "Ana Costa", "CRM12345", "Cardiologia", List.of());
+
+        when(profissionalRepository.findById(1L)).thenReturn(Optional.of(profissional));
+        when(profissionalRepository.save(profissional)).thenReturn(profissional);
+
+        Profissional resultado = profissionalService.inativar(1L);
+
+        assertFalse(resultado.getAtivo());
+        verify(profissionalRepository).save(profissional);
     }
 }

@@ -8,7 +8,8 @@ public record PacienteResponse(
         String cpf,
         Integer idade,
         String sexo,
-        String endereco) {
+        String endereco,
+        Boolean ativo) {
 
     public static PacienteResponse from(Paciente paciente) {
         return new PacienteResponse(
@@ -17,6 +18,7 @@ public record PacienteResponse(
                 paciente.getCpf(),
                 paciente.getIdade(),
                 paciente.getSexo(),
-                paciente.getEndereco());
+                paciente.getEndereco(),
+                paciente.getAtivo());
     }
 }
