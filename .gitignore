@@ -36,3 +36,19 @@ build/
 frontend/node_modules/
 frontend/dist/
 frontend/*.log
+
+# Node / Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+# Java / Maven
+target/
+
+# IDE
+.idea/
+.vscode/
+
+# Sistema
+.DS_Store
+Thumbs.db

@@ -240,7 +240,7 @@ h2 {
 
 .appointment-filter-panel {
   display: grid;
-  grid-template-columns: minmax(220px, 1.4fr) repeat(5, minmax(130px, 1fr)) auto;
+  grid-template-columns: minmax(180px, 1.2fr) repeat(5, minmax(130px, 1fr));
   gap: 10px;
   align-items: end;
   padding: 14px;
@@ -252,7 +252,16 @@ h2 {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding-bottom: 2px;
+  padding-bottom: 6px;
+  margin-bottom: 8px;
+  border-bottom: none;
+}
+
+.filter-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  gap: 8px;
+  align-items: center;
 }
 
 .appointment-filter-panel label {
@@ -267,15 +276,9 @@ h2 {
   font-weight: 800;
 }
 
-.filter-actions {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
-
 .search-panel {
   display: grid;
-  grid-template-columns: minmax(220px, 1fr) minmax(180px, 240px) minmax(160px, 220px) 40px;
+  grid-template-columns: minmax(200px, 2fr) minmax(150px, 1fr) minmax(150px, 1fr) 40px;
   gap: 10px;
   align-items: center;
   padding: 12px;
@@ -558,6 +561,23 @@ tbody tr:last-child td {
   }
 }
 
+@media (max-width: 1200px) {
+  .appointment-filter-panel {
+    grid-template-columns: minmax(180px, 1fr) repeat(3, minmax(110px, 1fr));
+    gap: 8px;
+    padding: 12px;
+  }
+
+  .filter-header {
+    grid-column: 1 / -1;
+    margin-bottom: 4px;
+  }
+
+  .filter-actions {
+    grid-column: 1 / -1;
+  }
+}
+
 @media (max-width: 980px) {
   .app-shell {
     grid-template-columns: 1fr;
@@ -603,17 +623,32 @@ tbody tr:last-child td {
   }
 
   .appointment-filter-panel {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: 1fr;
+    gap: 10px;
   }
 
   .filter-header {
-    align-items: flex-start;
+    grid-column: 1 / -1;
+    align-items: stretch;
     flex-direction: column;
+    margin-bottom: 0;
   }
 
-  .filter-header .primary-button,
+  .filter-header h2 {
+    margin-bottom: 8px;
+  }
+
+  .filter-header .primary-button {
+    width: 100%;
+  }
+
+  .appointment-filter-panel label {
+    min-width: 0;
+  }
+
   .filter-actions {
     width: 100%;
+    grid-column: 1 / -1;
   }
 
   .filter-actions .secondary-button {
@@ -622,10 +657,64 @@ tbody tr:last-child td {
 
   .search-panel {
     grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 12px;
+  }
+
+  .search-panel label {
+    grid-column: auto;
   }
 
   .search-panel select:only-of-type {
     grid-column: auto;
+  }
+
+  .search-panel .icon-button {
+    align-self: flex-start;
+    margin-top: 24px;
+  }
+}
+
+@media (max-width: 768px) {
+  .topbar {
+    margin-bottom: 12px;
+  }
+
+  h1 {
+    font-size: 28px;
+  }
+
+  .workspace {
+    padding: 14px;
+  }
+
+  .appointment-filter-panel {
+    padding: 10px;
+  }
+
+  .search-panel {
+    padding: 10px;
+  }
+
+  .primary-button,
+  .secondary-button,
+  .danger-button {
+    font-size: 14px;
+    min-height: 36px;
+    padding: 0 12px;
+  }
+
+  .icon-button {
+    width: 36px;
+    height: 36px;
+  }
+
+  input,
+  select,
+  textarea {
+    min-height: 36px;
+    font-size: 16px;
+    padding: 8px 9px;
   }
 }
 
@@ -639,14 +728,99 @@ tbody tr:last-child td {
   }
 
   h1 {
-    font-size: 26px;
+    font-size: 24px;
   }
 
   .appointment-filter-panel {
     grid-template-columns: 1fr;
+    gap: 8px;
+    padding: 10px;
   }
 
   .workspace {
+    padding: 12px;
+  }
+
+  .topbar {
+    margin-bottom: 10px;
+  }
+
+  .status-strip {
+    font-size: 12px;
+  }
+
+  .status-strip span {
+    min-height: 28px;
+    padding: 0 8px;
+    font-size: 11px;
+  }
+
+  .search-panel {
+    grid-template-columns: 1fr;
+    padding: 10px;
+    gap: 8px;
+  }
+
+  .search-panel label svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .search-panel input {
+    padding-left: 32px;
+    font-size: 14px;
+  }
+
+  .primary-button,
+  .secondary-button,
+  .danger-button {
+    font-size: 12px;
+    min-height: 34px;
+    padding: 0 10px;
+  }
+
+  .primary-button svg,
+  .secondary-button svg,
+  .danger-button svg,
+  .tab-button svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .filter-header {
+    gap: 8px;
+  }
+
+  .filter-header h2 {
+    font-size: 16px;
+    margin-bottom: 4px;
+  }
+
+  .icon-button {
+    width: 34px;
+    height: 34px;
+  }
+
+  table {
+    min-width: 300px;
+    font-size: 12px;
+  }
+
+  th,
+  td {
+    padding: 10px 12px;
+  }
+
+  .modal-panel {
+    width: min(100%, 95vw);
+  }
+
+  .modal-form {
+    gap: 10px;
     padding: 14px;
+  }
+
+  .button-row {
+    gap: 6px;
   }
 }
