@@ -74,6 +74,7 @@ const agendamentoForm = reactive({
 })
 
 const agendamentoModalAberto = ref(false)
+const cancelamentoModalAberto = ref(false)
 
 const filtros = reactive({
   pacienteId: '',
@@ -357,9 +358,19 @@ async function cancelarAgendamento() {
       method: 'PATCH',
       body: JSON.stringify({ motivo: cancelamento.motivo }),
     })
-    Object.assign(cancelamento, { agendamentoId: '', motivo: '' })
+    fecharModalCancelamento()
     await buscarAgendamentos()
   }, 'Agendamento cancelado.')
+}
+
+function abrirModalCancelamento(agendamento) {
+  Object.assign(cancelamento, { agendamentoId: agendamento.id, motivo: '' })
+  cancelamentoModalAberto.value = true
+}
+
+function fecharModalCancelamento() {
+  cancelamentoModalAberto.value = false
+  Object.assign(cancelamento, { agendamentoId: '', motivo: '' })
 }
 
 async function inativarPaciente(id) {
@@ -546,31 +557,6 @@ onMounted(carregarDados)
           </div>
         </form>
 
-        <form class="panel form-panel" @submit.prevent="cancelarAgendamento">
-          <h2>Cancelar</h2>
-          <label>
-            <span>Agendamento</span>
-            <select v-model="cancelamento.agendamentoId" required>
-              <option value="">Selecione</option>
-              <option
-                v-for="agendamento in agendamentos.filter((item) => item.status === 'AGENDADO')"
-                :key="agendamento.id"
-                :value="agendamento.id"
-              >
-                #{{ agendamento.id }} - {{ formatarData(agendamento.dataHora) }}
-              </option>
-            </select>
-          </label>
-          <label>
-            <span>Motivo</span>
-            <textarea v-model="cancelamento.motivo" rows="4" required />
-          </label>
-          <button class="danger-button" type="submit" :disabled="loading">
-            <Ban :size="18" aria-hidden="true" />
-            <span>Cancelar</span>
-          </button>
-        </form>
-
         <section class="panel table-panel span-all">
           <div class="section-heading">
             <h2>Agenda</h2>
@@ -586,6 +572,7 @@ onMounted(carregarDados)
                   <th>Profissional</th>
                   <th>Status</th>
                   <th>Motivo</th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
@@ -600,6 +587,17 @@ onMounted(carregarDados)
                     </span>
                   </td>
                   <td>{{ agendamento.motivoCancelamento || '-' }}</td>
+                  <td class="actions">
+                    <button
+                      v-if="agendamento.status === 'AGENDADO'"
+                      class="icon-button danger-icon"
+                      type="button"
+                      title="Cancelar agendamento"
+                      @click="abrirModalCancelamento(agendamento)"
+                    >
+                      <Ban :size="18" aria-hidden="true" />
+                    </button>
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -829,6 +827,40 @@ onMounted(carregarDados)
             <button class="secondary-button" type="button" @click="fecharModalAgendamento">
               <XCircle :size="18" aria-hidden="true" />
               <span>Cancelar</span>
+            </button>
+          </div>
+        </form>
+      </section>
+    </div>
+
+    <div
+      v-if="cancelamentoModalAberto"
+      class="modal-backdrop"
+      role="presentation"
+      @click.self="fecharModalCancelamento"
+    >
+      <section class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="cancelamento-modal-titulo">
+        <header class="modal-header">
+          <h2 id="cancelamento-modal-titulo">Cancelar agendamento</h2>
+          <button class="icon-button" type="button" title="Fechar" @click="fecharModalCancelamento">
+            <XCircle :size="18" aria-hidden="true" />
+          </button>
+        </header>
+
+        <form class="modal-form" @submit.prevent="cancelarAgendamento">
+          <p class="modal-summary">Agendamento #{{ cancelamento.agendamentoId }}</p>
+          <label>
+            <span>Motivo</span>
+            <textarea v-model="cancelamento.motivo" rows="4" required />
+          </label>
+          <div class="button-row">
+            <button class="danger-button" type="submit" :disabled="loading">
+              <Ban :size="18" aria-hidden="true" />
+              <span>Cancelar agendamento</span>
+            </button>
+            <button class="secondary-button" type="button" @click="fecharModalCancelamento">
+              <XCircle :size="18" aria-hidden="true" />
+              <span>Voltar</span>
             </button>
           </div>
         </form>

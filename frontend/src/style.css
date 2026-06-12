@@ -349,7 +349,8 @@ textarea:focus {
   gap: 8px;
 }
 
-.button-row .primary-button {
+.button-row .primary-button,
+.button-row .danger-button {
   flex: 1;
 }
 
@@ -404,6 +405,16 @@ textarea:focus {
   display: grid;
   gap: 14px;
   padding: 18px;
+}
+
+.modal-summary {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 8px;
+  color: var(--muted);
+  background: var(--surface-soft);
+  font-size: 13px;
+  font-weight: 800;
 }
 
 .table-panel {
