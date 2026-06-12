@@ -48,10 +48,17 @@ class AgendamentoServiceTest {
 
         when(pacienteService.buscarPorId(1L)).thenReturn(paciente);
         when(profissionalService.buscarPorId(1L)).thenReturn(profissional);
-        when(agendamentoRepository.existsByPacienteIdAndDataHoraAndStatus(1L, dataHora, StatusAgendamento.AGENDADO))
+        when(agendamentoRepository.existsByPacienteIdAndStatusAndDataHoraAfterAndDataHoraBefore(
+                1L,
+                StatusAgendamento.AGENDADO,
+                dataHora.minusMinutes(30),
+                dataHora.plusMinutes(30)))
                 .thenReturn(false);
-        when(agendamentoRepository.existsByProfissionalIdAndDataHoraAndStatus(1L, dataHora,
-                StatusAgendamento.AGENDADO)).thenReturn(false);
+        when(agendamentoRepository.existsByProfissionalIdAndStatusAndDataHoraAfterAndDataHoraBefore(
+                1L,
+                StatusAgendamento.AGENDADO,
+                dataHora.minusMinutes(30),
+                dataHora.plusMinutes(30))).thenReturn(false);
         when(agendamentoRepository.save(any(Agendamento.class))).thenAnswer(invocation -> {
             Agendamento agendamento = invocation.getArgument(0);
             agendamento.setId(1L);
@@ -76,12 +83,39 @@ class AgendamentoServiceTest {
 
         when(pacienteService.buscarPorId(1L)).thenReturn(paciente);
         when(profissionalService.buscarPorId(1L)).thenReturn(profissional);
-        when(agendamentoRepository.existsByPacienteIdAndDataHoraAndStatus(1L, dataHora, StatusAgendamento.AGENDADO))
+        when(agendamentoRepository.existsByPacienteIdAndStatusAndDataHoraAfterAndDataHoraBefore(
+                1L,
+                StatusAgendamento.AGENDADO,
+                dataHora.minusMinutes(30),
+                dataHora.plusMinutes(30)))
                 .thenReturn(true);
 
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
                 () -> agendamentoService.agendar(1L, 1L, dataHora));
+
+        assertEquals("Paciente já possui agendamento neste horário.", exception.getMessage());
+        verify(agendamentoRepository, never()).save(any(Agendamento.class));
+    }
+
+    @Test
+    void deveLancarErroQuandoPacienteTiverAgendamentoSobreposto() {
+        LocalDateTime dataHora = LocalDateTime.of(2026, 7, 10, 10, 15);
+        Paciente paciente = new Paciente(1L, "Maria Silva", "12345678900", 30, "Feminino", "Rua A", List.of());
+        Profissional profissional = new Profissional(2L, "Ana Costa", "CRM12345", "Cardiologia", List.of());
+
+        when(pacienteService.buscarPorId(1L)).thenReturn(paciente);
+        when(profissionalService.buscarPorId(2L)).thenReturn(profissional);
+        when(agendamentoRepository.existsByPacienteIdAndStatusAndDataHoraAfterAndDataHoraBefore(
+                1L,
+                StatusAgendamento.AGENDADO,
+                dataHora.minusMinutes(30),
+                dataHora.plusMinutes(30)))
+                .thenReturn(true);
+
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> agendamentoService.agendar(1L, 2L, dataHora));
 
         assertEquals("Paciente já possui agendamento neste horário.", exception.getMessage());
         verify(agendamentoRepository, never()).save(any(Agendamento.class));
@@ -112,10 +146,45 @@ class AgendamentoServiceTest {
 
         when(pacienteService.buscarPorId(1L)).thenReturn(paciente);
         when(profissionalService.buscarPorId(1L)).thenReturn(profissional);
-        when(agendamentoRepository.existsByPacienteIdAndDataHoraAndStatus(1L, dataHora, StatusAgendamento.AGENDADO))
+        when(agendamentoRepository.existsByPacienteIdAndStatusAndDataHoraAfterAndDataHoraBefore(
+                1L,
+                StatusAgendamento.AGENDADO,
+                dataHora.minusMinutes(30),
+                dataHora.plusMinutes(30)))
                 .thenReturn(false);
-        when(agendamentoRepository.existsByProfissionalIdAndDataHoraAndStatus(1L, dataHora,
-                StatusAgendamento.AGENDADO)).thenReturn(true);
+        when(agendamentoRepository.existsByProfissionalIdAndStatusAndDataHoraAfterAndDataHoraBefore(
+                1L,
+                StatusAgendamento.AGENDADO,
+                dataHora.minusMinutes(30),
+                dataHora.plusMinutes(30))).thenReturn(true);
+
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> agendamentoService.agendar(1L, 1L, dataHora));
+
+        assertEquals("Profissional já possui agendamento neste horário.", exception.getMessage());
+        verify(agendamentoRepository, never()).save(any(Agendamento.class));
+    }
+
+    @Test
+    void deveLancarErroQuandoProfissionalTiverAgendamentoSobreposto() {
+        LocalDateTime dataHora = LocalDateTime.of(2026, 7, 10, 10, 0);
+        Paciente paciente = new Paciente(1L, "Maria Silva", "12345678900", 30, "Feminino", "Rua A", List.of());
+        Profissional profissional = new Profissional(1L, "Ana Costa", "CRM12345", "Cardiologia", List.of());
+
+        when(pacienteService.buscarPorId(1L)).thenReturn(paciente);
+        when(profissionalService.buscarPorId(1L)).thenReturn(profissional);
+        when(agendamentoRepository.existsByPacienteIdAndStatusAndDataHoraAfterAndDataHoraBefore(
+                1L,
+                StatusAgendamento.AGENDADO,
+                dataHora.minusMinutes(30),
+                dataHora.plusMinutes(30)))
+                .thenReturn(false);
+        when(agendamentoRepository.existsByProfissionalIdAndStatusAndDataHoraAfterAndDataHoraBefore(
+                1L,
+                StatusAgendamento.AGENDADO,
+                dataHora.minusMinutes(30),
+                dataHora.plusMinutes(30))).thenReturn(true);
 
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,

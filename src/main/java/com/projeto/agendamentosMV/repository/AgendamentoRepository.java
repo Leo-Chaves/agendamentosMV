@@ -10,8 +10,15 @@ import com.projeto.agendamentosMV.entity.StatusAgendamento;
 
 public interface AgendamentoRepository extends JpaRepository<Agendamento, Long>, JpaSpecificationExecutor<Agendamento> {
 
-    boolean existsByPacienteIdAndDataHoraAndStatus(Long pacienteId, LocalDateTime dataHora, StatusAgendamento status);
+    boolean existsByPacienteIdAndStatusAndDataHoraAfterAndDataHoraBefore(
+            Long pacienteId,
+            StatusAgendamento status,
+            LocalDateTime inicioJanela,
+            LocalDateTime fim);
 
-    boolean existsByProfissionalIdAndDataHoraAndStatus(Long profissionalId, LocalDateTime dataHora,
-            StatusAgendamento status);
+    boolean existsByProfissionalIdAndStatusAndDataHoraAfterAndDataHoraBefore(
+            Long profissionalId,
+            StatusAgendamento status,
+            LocalDateTime inicioJanela,
+            LocalDateTime fim);
 }

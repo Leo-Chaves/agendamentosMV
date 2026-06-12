@@ -3,6 +3,7 @@ package com.projeto.agendamentosMV.service;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +22,9 @@ public class AgendamentoService {
     private final AgendamentoRepository agendamentoRepository;
     private final PacienteService pacienteService;
     private final ProfissionalService profissionalService;
+
+    @Value("${agendamento.duracao-minutos:30}")
+    private long duracaoMinutos = 30;
 
     public Agendamento agendar(Long pacienteId, Long profissionalId, LocalDateTime dataHora) {
         Paciente paciente = pacienteService.buscarPorId(pacienteId);
@@ -68,19 +72,25 @@ public class AgendamentoService {
     }
 
     private void validarDisponibilidade(Long pacienteId, Long profissionalId, LocalDateTime dataHora) {
-        boolean pacienteOcupado = agendamentoRepository.existsByPacienteIdAndDataHoraAndStatus(
+        LocalDateTime inicioJanelaConflito = dataHora.minusMinutes(duracaoMinutos);
+        LocalDateTime fimNovoAgendamento = dataHora.plusMinutes(duracaoMinutos);
+
+        boolean pacienteOcupado = agendamentoRepository.existsByPacienteIdAndStatusAndDataHoraAfterAndDataHoraBefore(
                 pacienteId,
-                dataHora,
-                StatusAgendamento.AGENDADO);
+                StatusAgendamento.AGENDADO,
+                inicioJanelaConflito,
+                fimNovoAgendamento);
 
         if (pacienteOcupado) {
             throw new IllegalArgumentException("Paciente já possui agendamento neste horário.");
         }
 
-        boolean profissionalOcupado = agendamentoRepository.existsByProfissionalIdAndDataHoraAndStatus(
+        boolean profissionalOcupado = agendamentoRepository
+                .existsByProfissionalIdAndStatusAndDataHoraAfterAndDataHoraBefore(
                 profissionalId,
-                dataHora,
-                StatusAgendamento.AGENDADO);
+                StatusAgendamento.AGENDADO,
+                inicioJanelaConflito,
+                fimNovoAgendamento);
 
         if (profissionalOcupado) {
             throw new IllegalArgumentException("Profissional já possui agendamento neste horário.");

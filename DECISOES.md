@@ -21,7 +21,6 @@ Foi adicionada uma configuração opcional para Oracle usando:
 - profile Spring `oracle`;
 - driver JDBC `ojdbc11`.
 
-Essa abordagem demonstra compatibilidade com Oracle sem obrigar o avaliador a subir um banco pesado para executar o fluxo principal.
 
 ## Perfil de administrador e autenticação
 
@@ -45,7 +44,7 @@ O projeto segue uma organização simples em camadas:
 
 ## DTOs e Controllers
 
-A API REST não expõe as entidades JPA diretamente.
+A API REST não pode expor as entidades JPA diretamente.
 
 Foram criados DTOs de request e response para:
 
@@ -75,6 +74,8 @@ Motivos:
 - evitar acoplamento entre a aplicação Java e a camada de apresentação.
 
 A interface cobre cadastro, edição, listagem, filtros, cancelamento, inativação e ativação.
+
+Auxilio de IA para criação das telas 
 
 ## Entidades principais
 
@@ -116,7 +117,7 @@ Valores iniciais:
 
 O projeto seguirá uma abordagem orientada a testes (TDD) nas regras de negócio.
 
-O auxílio de IA será usado para apoiar a escrita dos testes, revisar decisões técnicas e sugerir melhorias.
+O auxílio de IA será usado para apoiar a escrita dos testes, revisar decisões técnicas e sugerir melhorias, mas a arquitetura do monolito e deicões tcnicsas serão criadas/tomadas pro mim!
 
 ## Cobertura inicial de testes
 
@@ -140,8 +141,8 @@ O `AgendamentoServiceTest` cobre:
 
 - criar agendamento quando o horário estiver disponível;
 - impedir agendamento em data/hora passada;
-- impedir agendamento quando o paciente já tiver agendamento ativo no mesmo horário;
-- impedir agendamento quando o profissional já tiver agendamento ativo no mesmo horário;
+- impedir agendamento quando o paciente já tiver agendamento ativo no mesmo horário ou em horário sobreposto;
+- impedir agendamento quando o profissional já tiver agendamento ativo no mesmo horário ou em horário sobreposto;
 - listar agendamentos;
 - listar agendamentos com filtros por paciente, profissional ou status;
 - buscar agendamento por id;
@@ -162,6 +163,9 @@ Regras iniciais:
 - não é permitido criar agendamento para data/hora passada;
 - um paciente não pode ter dois agendamentos ativos no mesmo horário;
 - um profissional não pode ter dois agendamentos ativos no mesmo horário;
+- cada agendamento possui duração padrão de 30 minutos;
+- conflitos são validados por sobreposição de intervalo de tempo, não apenas por horário inicial igual;
+- a duração do agendamento pode ser alterada pela propriedade `agendamento.duracao-minutos`;
 - todo novo agendamento começa com status `AGENDADO`;
 - agendamentos cancelados recebem o status `CANCELADO`;
 - todo cancelamento deve registrar um motivo;
@@ -170,7 +174,15 @@ Regras iniciais:
 
 As validações de conflito consideram apenas agendamentos com status `AGENDADO`.
 
-Agendamentos com status `CANCELADO` ou `REALIZADO` são tratados como histórico e não vão bloquear novos agendamentos no mesmo horário.
+A janela de conflito considera o horário inicial do novo agendamento e a duração configurada.
+
+Exemplo com duração de 30 minutos:
+
+- um agendamento das 10:00 às 10:30 bloqueia outro às 10:15;
+- um agendamento das 09:45 às 10:15 bloqueia outro às 10:00;
+- um agendamento das 10:00 às 10:30 não bloqueia outro às 10:30.
+
+Agendamentos com status `CANCELADO` ou `REALIZADO` são tratados como histórico e não bloqueiam novos agendamentos no mesmo intervalo.
 
 ## Ativação e inativação de pacientes e profissionais
 
@@ -200,3 +212,11 @@ Motivos:
 - corrigir dados digitados incorretamente;
 - manter o histórico de agendamentos ligado ao mesmo registro;
 - evitar exclusão e recriação de cadastros para ajustes simples.
+
+## Percebi que não tinha um tempo de agendamento, então era possivel marcar agendamentos seguidos
+
+- A partirde agora cada agendamento tem um tempo minimo, os sistema entende que cada agendamento dura em torno de 30 minutos e bloqueia o proficional e usuario 
+
+- Optei por ser um atributo do sistema, ou seja para alterar so ajustando o codigo. Achei melhor fazer dessa formar ao inves de agendamentos terem tempo diferente(menos poluição no front), mas caso fosse um sistema para multi-empresas podesse ser melhor 
+
+

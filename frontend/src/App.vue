@@ -55,6 +55,8 @@ const agendamentoForm = reactive({
   dataHora: '',
 })
 
+const agendamentoModalAberto = ref(false)
+
 const filtros = reactive({
   pacienteId: '',
   profissionalId: '',
@@ -188,9 +190,19 @@ async function salvarAgendamento() {
         dataHora: agendamentoForm.dataHora,
       }),
     })
-    Object.assign(agendamentoForm, { pacienteId: '', profissionalId: '', dataHora: '' })
+    fecharModalAgendamento()
     await buscarAgendamentos()
   }, 'Agendamento criado.')
+}
+
+function abrirModalAgendamento() {
+  Object.assign(agendamentoForm, { pacienteId: '', profissionalId: '', dataHora: '' })
+  agendamentoModalAberto.value = true
+}
+
+function fecharModalAgendamento() {
+  agendamentoModalAberto.value = false
+  Object.assign(agendamentoForm, { pacienteId: '', profissionalId: '', dataHora: '' })
 }
 
 async function buscarAgendamentos() {
@@ -323,39 +335,12 @@ onMounted(carregarDados)
       <p v-if="error" class="alert danger">{{ error }}</p>
 
       <section v-if="activeTab === 'agendamentos'" class="content-grid appointments-grid">
-        <form class="panel form-panel" @submit.prevent="salvarAgendamento">
-          <h2>Novo agendamento</h2>
-          <label>
-            <span>Paciente</span>
-            <select v-model="agendamentoForm.pacienteId" required>
-              <option value="">Selecione</option>
-              <option v-for="paciente in pacientesAtivos" :key="paciente.id" :value="paciente.id">
-                {{ paciente.nome }}
-              </option>
-            </select>
-          </label>
-          <label>
-            <span>Profissional</span>
-            <select v-model="agendamentoForm.profissionalId" required>
-              <option value="">Selecione</option>
-              <option
-                v-for="profissional in profissionaisAtivos"
-                :key="profissional.id"
-                :value="profissional.id"
-              >
-                {{ profissional.nome }} - {{ profissional.area }}
-              </option>
-            </select>
-          </label>
-          <label>
-            <span>Data e hora</span>
-            <input v-model="agendamentoForm.dataHora" type="datetime-local" required />
-          </label>
-          <button class="primary-button" type="submit" :disabled="loading">
+        <div class="appointments-toolbar span-all">
+          <button class="primary-button" type="button" :disabled="loading" @click="abrirModalAgendamento">
             <Plus :size="18" aria-hidden="true" />
-            <span>Agendar</span>
+            <span>Novo agendamento</span>
           </button>
-        </form>
+        </div>
 
         <form class="panel form-panel" @submit.prevent="filtrarAgendamentos">
           <h2>Filtros</h2>
@@ -626,5 +611,60 @@ onMounted(carregarDados)
         </section>
       </section>
     </section>
+
+    <div
+      v-if="agendamentoModalAberto"
+      class="modal-backdrop"
+      role="presentation"
+      @click.self="fecharModalAgendamento"
+    >
+      <section class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="agendamento-modal-titulo">
+        <header class="modal-header">
+          <h2 id="agendamento-modal-titulo">Novo agendamento</h2>
+          <button class="icon-button" type="button" title="Fechar" @click="fecharModalAgendamento">
+            <XCircle :size="18" aria-hidden="true" />
+          </button>
+        </header>
+
+        <form class="modal-form" @submit.prevent="salvarAgendamento">
+          <label>
+            <span>Paciente</span>
+            <select v-model="agendamentoForm.pacienteId" required>
+              <option value="">Selecione</option>
+              <option v-for="paciente in pacientesAtivos" :key="paciente.id" :value="paciente.id">
+                {{ paciente.nome }}
+              </option>
+            </select>
+          </label>
+          <label>
+            <span>Profissional</span>
+            <select v-model="agendamentoForm.profissionalId" required>
+              <option value="">Selecione</option>
+              <option
+                v-for="profissional in profissionaisAtivos"
+                :key="profissional.id"
+                :value="profissional.id"
+              >
+                {{ profissional.nome }} - {{ profissional.area }}
+              </option>
+            </select>
+          </label>
+          <label>
+            <span>Data e hora</span>
+            <input v-model="agendamentoForm.dataHora" type="datetime-local" required />
+          </label>
+          <div class="button-row">
+            <button class="primary-button" type="submit" :disabled="loading">
+              <Plus :size="18" aria-hidden="true" />
+              <span>Agendar</span>
+            </button>
+            <button class="secondary-button" type="button" @click="fecharModalAgendamento">
+              <XCircle :size="18" aria-hidden="true" />
+              <span>Cancelar</span>
+            </button>
+          </div>
+        </form>
+      </section>
+    </div>
   </main>
 </template>

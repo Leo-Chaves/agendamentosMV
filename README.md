@@ -250,6 +250,9 @@ PATCH /agendamentos/{id}/cancelar
 
 - Um profissional não pode ter dois agendamentos ativos no mesmo horário.
 - Um paciente não pode ter dois agendamentos ativos no mesmo horário.
+- Cada agendamento possui duração padrão de 30 minutos.
+- A validação de conflito considera sobreposição de intervalos, não apenas horário inicial igual.
+- A duração pode ser alterada pela propriedade `agendamento.duracao-minutos`.
 - Não é permitido criar agendamento para data/hora passada.
 - Todo novo agendamento começa com status `AGENDADO`.
 - Cancelamentos registram motivo e mudam o status para `CANCELADO`.
