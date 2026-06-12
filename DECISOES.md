@@ -21,6 +21,18 @@ Foi adicionada uma configuração opcional para Oracle usando:
 - profile Spring `oracle`;
 - driver JDBC `ojdbc11`.
 
+## Dados iniciais
+
+Foi criado um carregamento inicial de dados com `CommandLineRunner`.
+
+Ele cadastra pacientes, profissionais e agendamentos de exemplo quando o banco está vazio.
+
+Motivos:
+
+- facilitar testes manuais no frontend e no Postman;
+- permitir que a tela abra com dados para navegação;
+- evitar duplicidade em bancos persistentes, como Oracle, verificando se já existem registros antes de inserir;
+- manter compatibilidade entre H2 e Oracle sem depender de diferenças de sintaxe SQL.
 
 ## Perfil de administrador e autenticação
 

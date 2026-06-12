@@ -71,6 +71,8 @@ User: sa
 Password:
 ```
 
+Ao iniciar a aplicação com o banco vazio, alguns pacientes, profissionais e agendamentos de exemplo são cadastrados automaticamente para facilitar testes no frontend e no Postman.
+
 ## Oracle com Docker
 
 O H2 é o banco padrão para facilitar a execução local.
