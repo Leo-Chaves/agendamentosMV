@@ -238,6 +238,36 @@ h2 {
   justify-content: flex-end;
 }
 
+.search-panel {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) minmax(180px, 240px) minmax(160px, 220px) 40px;
+  gap: 10px;
+  align-items: center;
+  padding: 12px;
+}
+
+.search-panel label {
+  position: relative;
+  display: block;
+}
+
+.search-panel label svg {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  color: var(--muted);
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.search-panel input {
+  padding-left: 40px;
+}
+
+.search-panel select:only-of-type {
+  grid-column: span 2;
+}
+
 .panel {
   min-width: 0;
   border: 1px solid var(--border);
@@ -524,6 +554,14 @@ tbody tr:last-child td {
   .content-grid,
   .appointments-grid {
     grid-template-columns: 1fr;
+  }
+
+  .search-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .search-panel select:only-of-type {
+    grid-column: auto;
   }
 }
 

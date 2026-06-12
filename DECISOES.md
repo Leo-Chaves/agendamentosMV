@@ -77,6 +77,21 @@ A interface cobre cadastro, edição, listagem, filtros, cancelamento, inativaç
 
 Auxilio de IA para criação das telas 
 
+## Pesquisa inteligente no frontend
+
+Foram adicionados filtros locais no frontend para melhorar a usabilidade das listagens.
+
+A busca considera textos relacionados ao registro, sem exigir que o usuário escolha exatamente a coluna.
+
+Filtros disponíveis:
+
+- agendamentos: busca por paciente, profissional, status, data, motivo ou área profissional;
+- pacientes: busca por nome, CPF, sexo ou status;
+- profissionais: busca por nome, CRM, área ou status;
+- profissionais e agendamentos também possuem filtro por área profissional.
+
+O filtro por tipo de atendimento não foi implementado porque esse campo ainda não existe no modelo do sistema. Caso o domínio passe a armazenar esse dado, ele pode ser incluído na mesma estratégia de busca.
+
 ## Entidades principais
 
 As entidades iniciais do domínio são:

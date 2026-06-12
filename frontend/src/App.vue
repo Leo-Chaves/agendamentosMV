@@ -79,6 +79,19 @@ const filtros = reactive({
   pacienteId: '',
   profissionalId: '',
   status: '',
+  texto: '',
+  areaProfissional: '',
+})
+
+const filtrosPacientes = reactive({
+  texto: '',
+  status: '',
+})
+
+const filtrosProfissionais = reactive({
+  texto: '',
+  area: '',
+  status: '',
 })
 
 const cancelamento = reactive({
@@ -88,6 +101,77 @@ const cancelamento = reactive({
 
 const pacientesAtivos = computed(() => pacientes.value.filter((paciente) => paciente.ativo))
 const profissionaisAtivos = computed(() => profissionais.value.filter((profissional) => profissional.ativo))
+
+const pacientesFiltrados = computed(() => {
+  const texto = normalizar(filtrosPacientes.texto)
+
+  return pacientes.value.filter((paciente) => {
+    const correspondeAoTexto =
+      !texto ||
+      [
+        paciente.nome,
+        paciente.cpf,
+        paciente.idade,
+        rotuloSexo(paciente.sexo),
+        paciente.ativo ? 'ativo' : 'inativo',
+      ].some((valor) => normalizar(valor).includes(texto))
+
+    const correspondeAoStatus =
+      !filtrosPacientes.status ||
+      (filtrosPacientes.status === 'ATIVO' ? paciente.ativo : !paciente.ativo)
+
+    return correspondeAoTexto && correspondeAoStatus
+  })
+})
+
+const profissionaisFiltrados = computed(() => {
+  const texto = normalizar(filtrosProfissionais.texto)
+
+  return profissionais.value.filter((profissional) => {
+    const correspondeAoTexto =
+      !texto ||
+      [
+        profissional.nome,
+        profissional.crm,
+        profissional.area,
+        rotuloArea(profissional.area),
+        profissional.ativo ? 'ativo' : 'inativo',
+      ].some((valor) => normalizar(valor).includes(texto))
+
+    const correspondeAArea = !filtrosProfissionais.area || profissional.area === filtrosProfissionais.area
+    const correspondeAoStatus =
+      !filtrosProfissionais.status ||
+      (filtrosProfissionais.status === 'ATIVO' ? profissional.ativo : !profissional.ativo)
+
+    return correspondeAoTexto && correspondeAArea && correspondeAoStatus
+  })
+})
+
+const agendamentosFiltrados = computed(() => {
+  const texto = normalizar(filtros.texto)
+
+  return agendamentos.value.filter((agendamento) => {
+    const profissional = profissionalPorId(agendamento.profissionalId)
+    const areaProfissional = profissional?.area || ''
+
+    const correspondeAoTexto =
+      !texto ||
+      [
+        agendamento.id,
+        agendamento.pacienteNome,
+        agendamento.profissionalNome,
+        agendamento.status,
+        agendamento.motivoCancelamento,
+        formatarData(agendamento.dataHora),
+        areaProfissional,
+        rotuloArea(areaProfissional),
+      ].some((valor) => normalizar(valor).includes(texto))
+
+    const correspondeAArea = !filtros.areaProfissional || areaProfissional === filtros.areaProfissional
+
+    return correspondeAoTexto && correspondeAArea
+  })
+})
 
 async function api(path, options = {}) {
   const response = await fetch(`/api${path}`, {
@@ -255,8 +339,16 @@ async function filtrarAgendamentos() {
 }
 
 async function limparFiltros() {
-  Object.assign(filtros, { pacienteId: '', profissionalId: '', status: '' })
+  Object.assign(filtros, { pacienteId: '', profissionalId: '', status: '', texto: '', areaProfissional: '' })
   await run(buscarAgendamentos, 'Filtros limpos.')
+}
+
+function limparFiltrosPacientes() {
+  Object.assign(filtrosPacientes, { texto: '', status: '' })
+}
+
+function limparFiltrosProfissionais() {
+  Object.assign(filtrosProfissionais, { texto: '', area: '', status: '' })
 }
 
 async function cancelarAgendamento() {
@@ -326,6 +418,18 @@ function rotuloArea(valor) {
   return areasProfissionais.find((area) => area.value === valor)?.label || valor
 }
 
+function normalizar(valor) {
+  return String(valor ?? '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim()
+}
+
+function profissionalPorId(id) {
+  return profissionais.value.find((profissional) => profissional.id === id)
+}
+
 onMounted(carregarDados)
 </script>
 
@@ -388,6 +492,14 @@ onMounted(carregarDados)
         <form class="panel form-panel" @submit.prevent="filtrarAgendamentos">
           <h2>Filtros</h2>
           <label>
+            <span>Busca</span>
+            <input
+              v-model="filtros.texto"
+              placeholder="Paciente, profissional, status ou área"
+              type="search"
+            />
+          </label>
+          <label>
             <span>Paciente</span>
             <select v-model="filtros.pacienteId">
               <option value="">Todos</option>
@@ -412,6 +524,15 @@ onMounted(carregarDados)
               <option value="AGENDADO">AGENDADO</option>
               <option value="CANCELADO">CANCELADO</option>
               <option value="REALIZADO">REALIZADO</option>
+            </select>
+          </label>
+          <label>
+            <span>Área profissional</span>
+            <select v-model="filtros.areaProfissional">
+              <option value="">Todas</option>
+              <option v-for="area in areasProfissionais" :key="area.value" :value="area.value">
+                {{ area.label }}
+              </option>
             </select>
           </label>
           <div class="button-row">
@@ -468,7 +589,7 @@ onMounted(carregarDados)
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="agendamento in agendamentos" :key="agendamento.id">
+                <tr v-for="agendamento in agendamentosFiltrados" :key="agendamento.id">
                   <td>#{{ agendamento.id }}</td>
                   <td>{{ formatarData(agendamento.dataHora) }}</td>
                   <td>{{ agendamento.pacienteNome }}</td>
@@ -494,6 +615,21 @@ onMounted(carregarDados)
           </button>
         </div>
 
+        <form class="panel search-panel span-all" @submit.prevent>
+          <label>
+            <Search :size="18" aria-hidden="true" />
+            <input v-model="filtrosPacientes.texto" placeholder="Buscar por nome, CPF ou sexo" type="search" />
+          </label>
+          <select v-model="filtrosPacientes.status" aria-label="Status do paciente">
+            <option value="">Todos os status</option>
+            <option value="ATIVO">Ativos</option>
+            <option value="INATIVO">Inativos</option>
+          </select>
+          <button class="icon-button" type="button" title="Limpar busca" @click="limparFiltrosPacientes">
+            <XCircle :size="18" aria-hidden="true" />
+          </button>
+        </form>
+
         <section class="panel table-panel span-all">
           <div class="section-heading">
             <h2>Pacientes</h2>
@@ -512,7 +648,7 @@ onMounted(carregarDados)
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="paciente in pacientes" :key="paciente.id">
+                <tr v-for="paciente in pacientesFiltrados" :key="paciente.id">
                   <td>{{ paciente.nome }}</td>
                   <td>{{ paciente.cpf }}</td>
                   <td>{{ paciente.idade }}</td>
@@ -563,6 +699,27 @@ onMounted(carregarDados)
           </button>
         </div>
 
+        <form class="panel search-panel span-all" @submit.prevent>
+          <label>
+            <Search :size="18" aria-hidden="true" />
+            <input v-model="filtrosProfissionais.texto" placeholder="Buscar por nome, CRM ou área" type="search" />
+          </label>
+          <select v-model="filtrosProfissionais.area" aria-label="Área profissional">
+            <option value="">Todas as áreas</option>
+            <option v-for="area in areasProfissionais" :key="area.value" :value="area.value">
+              {{ area.label }}
+            </option>
+          </select>
+          <select v-model="filtrosProfissionais.status" aria-label="Status do profissional">
+            <option value="">Todos os status</option>
+            <option value="ATIVO">Ativos</option>
+            <option value="INATIVO">Inativos</option>
+          </select>
+          <button class="icon-button" type="button" title="Limpar busca" @click="limparFiltrosProfissionais">
+            <XCircle :size="18" aria-hidden="true" />
+          </button>
+        </form>
+
         <section class="panel table-panel span-all">
           <div class="section-heading">
             <h2>Profissionais</h2>
@@ -580,7 +737,7 @@ onMounted(carregarDados)
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="profissional in profissionais" :key="profissional.id">
+                <tr v-for="profissional in profissionaisFiltrados" :key="profissional.id">
                   <td>{{ profissional.nome }}</td>
                   <td>{{ profissional.crm }}</td>
                   <td>{{ rotuloArea(profissional.area) }}</td>
