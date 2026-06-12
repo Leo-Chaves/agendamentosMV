@@ -232,7 +232,8 @@ h2 {
   grid-template-columns: repeat(2, minmax(240px, 1fr));
 }
 
-.appointments-toolbar {
+.appointments-toolbar,
+.entity-toolbar {
   display: flex;
   justify-content: flex-end;
 }

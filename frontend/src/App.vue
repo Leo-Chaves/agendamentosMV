@@ -48,6 +48,8 @@ const profissionalForm = reactive({
 
 const pacienteEmEdicaoId = ref(null)
 const profissionalEmEdicaoId = ref(null)
+const pacienteModalAberto = ref(false)
+const profissionalModalAberto = ref(false)
 
 const agendamentoForm = reactive({
   pacienteId: '',
@@ -133,7 +135,7 @@ async function salvarPaciente() {
       method: editando ? 'PUT' : 'POST',
       body: JSON.stringify(payload),
     })
-    limparFormularioPaciente()
+    fecharModalPaciente()
     await carregarDadosSilencioso()
   }, editando ? 'Paciente atualizado.' : 'Paciente cadastrado.')
 }
@@ -145,9 +147,14 @@ async function salvarProfissional() {
       method: editando ? 'PUT' : 'POST',
       body: JSON.stringify(profissionalForm),
     })
-    limparFormularioProfissional()
+    fecharModalProfissional()
     await carregarDadosSilencioso()
   }, editando ? 'Profissional atualizado.' : 'Profissional cadastrado.')
+}
+
+function abrirModalPaciente() {
+  limparFormularioPaciente()
+  pacienteModalAberto.value = true
 }
 
 function editarPaciente(paciente) {
@@ -159,11 +166,22 @@ function editarPaciente(paciente) {
     sexo: paciente.sexo,
     endereco: paciente.endereco,
   })
+  pacienteModalAberto.value = true
 }
 
 function limparFormularioPaciente() {
   pacienteEmEdicaoId.value = null
   Object.assign(pacienteForm, { nome: '', cpf: '', idade: 30, sexo: '', endereco: '' })
+}
+
+function fecharModalPaciente() {
+  pacienteModalAberto.value = false
+  limparFormularioPaciente()
+}
+
+function abrirModalProfissional() {
+  limparFormularioProfissional()
+  profissionalModalAberto.value = true
 }
 
 function editarProfissional(profissional) {
@@ -173,11 +191,17 @@ function editarProfissional(profissional) {
     crm: profissional.crm,
     area: profissional.area,
   })
+  profissionalModalAberto.value = true
 }
 
 function limparFormularioProfissional() {
   profissionalEmEdicaoId.value = null
   Object.assign(profissionalForm, { nome: '', crm: '', area: '' })
+}
+
+function fecharModalProfissional() {
+  profissionalModalAberto.value = false
+  limparFormularioProfissional()
 }
 
 async function salvarAgendamento() {
@@ -444,32 +468,14 @@ onMounted(carregarDados)
       </section>
 
       <section v-if="activeTab === 'pacientes'" class="content-grid">
-        <form class="panel form-panel" @submit.prevent="salvarPaciente">
-          <h2>{{ pacienteEmEdicaoId ? 'Editar paciente' : 'Novo paciente' }}</h2>
-          <label><span>Nome</span><input v-model="pacienteForm.nome" required /></label>
-          <label><span>CPF</span><input v-model="pacienteForm.cpf" required /></label>
-          <label><span>Idade</span><input v-model.number="pacienteForm.idade" min="0" type="number" required /></label>
-          <label><span>Sexo</span><input v-model="pacienteForm.sexo" required /></label>
-          <label><span>Endereço</span><input v-model="pacienteForm.endereco" required /></label>
-          <div class="button-row">
-            <button class="primary-button" type="submit" :disabled="loading">
-              <Save v-if="pacienteEmEdicaoId" :size="18" aria-hidden="true" />
-              <Plus v-else :size="18" aria-hidden="true" />
-              <span>{{ pacienteEmEdicaoId ? 'Salvar' : 'Cadastrar' }}</span>
-            </button>
-            <button
-              v-if="pacienteEmEdicaoId"
-              class="icon-button"
-              type="button"
-              title="Cancelar edição"
-              @click="limparFormularioPaciente"
-            >
-              <XCircle :size="18" aria-hidden="true" />
-            </button>
-          </div>
-        </form>
+        <div class="entity-toolbar span-all">
+          <button class="primary-button" type="button" :disabled="loading" @click="abrirModalPaciente">
+            <Plus :size="18" aria-hidden="true" />
+            <span>Novo paciente</span>
+          </button>
+        </div>
 
-        <section class="panel table-panel wide">
+        <section class="panel table-panel span-all">
           <div class="section-heading">
             <h2>Pacientes</h2>
             <Search :size="20" aria-hidden="true" />
@@ -529,30 +535,14 @@ onMounted(carregarDados)
       </section>
 
       <section v-if="activeTab === 'profissionais'" class="content-grid">
-        <form class="panel form-panel" @submit.prevent="salvarProfissional">
-          <h2>{{ profissionalEmEdicaoId ? 'Editar profissional' : 'Novo profissional' }}</h2>
-          <label><span>Nome</span><input v-model="profissionalForm.nome" required /></label>
-          <label><span>CRM</span><input v-model="profissionalForm.crm" required /></label>
-          <label><span>Área</span><input v-model="profissionalForm.area" required /></label>
-          <div class="button-row">
-            <button class="primary-button" type="submit" :disabled="loading">
-              <Save v-if="profissionalEmEdicaoId" :size="18" aria-hidden="true" />
-              <Plus v-else :size="18" aria-hidden="true" />
-              <span>{{ profissionalEmEdicaoId ? 'Salvar' : 'Cadastrar' }}</span>
-            </button>
-            <button
-              v-if="profissionalEmEdicaoId"
-              class="icon-button"
-              type="button"
-              title="Cancelar edição"
-              @click="limparFormularioProfissional"
-            >
-              <XCircle :size="18" aria-hidden="true" />
-            </button>
-          </div>
-        </form>
+        <div class="entity-toolbar span-all">
+          <button class="primary-button" type="button" :disabled="loading" @click="abrirModalProfissional">
+            <Plus :size="18" aria-hidden="true" />
+            <span>Novo profissional</span>
+          </button>
+        </div>
 
-        <section class="panel table-panel wide">
+        <section class="panel table-panel span-all">
           <div class="section-heading">
             <h2>Profissionais</h2>
             <Search :size="20" aria-hidden="true" />
@@ -659,6 +649,76 @@ onMounted(carregarDados)
               <span>Agendar</span>
             </button>
             <button class="secondary-button" type="button" @click="fecharModalAgendamento">
+              <XCircle :size="18" aria-hidden="true" />
+              <span>Cancelar</span>
+            </button>
+          </div>
+        </form>
+      </section>
+    </div>
+
+    <div
+      v-if="pacienteModalAberto"
+      class="modal-backdrop"
+      role="presentation"
+      @click.self="fecharModalPaciente"
+    >
+      <section class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="paciente-modal-titulo">
+        <header class="modal-header">
+          <h2 id="paciente-modal-titulo">{{ pacienteEmEdicaoId ? 'Editar paciente' : 'Novo paciente' }}</h2>
+          <button class="icon-button" type="button" title="Fechar" @click="fecharModalPaciente">
+            <XCircle :size="18" aria-hidden="true" />
+          </button>
+        </header>
+
+        <form class="modal-form" @submit.prevent="salvarPaciente">
+          <label><span>Nome</span><input v-model="pacienteForm.nome" required /></label>
+          <label><span>CPF</span><input v-model="pacienteForm.cpf" required /></label>
+          <label><span>Idade</span><input v-model.number="pacienteForm.idade" min="0" type="number" required /></label>
+          <label><span>Sexo</span><input v-model="pacienteForm.sexo" required /></label>
+          <label><span>Endereço</span><input v-model="pacienteForm.endereco" required /></label>
+          <div class="button-row">
+            <button class="primary-button" type="submit" :disabled="loading">
+              <Save v-if="pacienteEmEdicaoId" :size="18" aria-hidden="true" />
+              <Plus v-else :size="18" aria-hidden="true" />
+              <span>{{ pacienteEmEdicaoId ? 'Salvar' : 'Cadastrar' }}</span>
+            </button>
+            <button class="secondary-button" type="button" @click="fecharModalPaciente">
+              <XCircle :size="18" aria-hidden="true" />
+              <span>Cancelar</span>
+            </button>
+          </div>
+        </form>
+      </section>
+    </div>
+
+    <div
+      v-if="profissionalModalAberto"
+      class="modal-backdrop"
+      role="presentation"
+      @click.self="fecharModalProfissional"
+    >
+      <section class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="profissional-modal-titulo">
+        <header class="modal-header">
+          <h2 id="profissional-modal-titulo">
+            {{ profissionalEmEdicaoId ? 'Editar profissional' : 'Novo profissional' }}
+          </h2>
+          <button class="icon-button" type="button" title="Fechar" @click="fecharModalProfissional">
+            <XCircle :size="18" aria-hidden="true" />
+          </button>
+        </header>
+
+        <form class="modal-form" @submit.prevent="salvarProfissional">
+          <label><span>Nome</span><input v-model="profissionalForm.nome" required /></label>
+          <label><span>CRM</span><input v-model="profissionalForm.crm" required /></label>
+          <label><span>Área</span><input v-model="profissionalForm.area" required /></label>
+          <div class="button-row">
+            <button class="primary-button" type="submit" :disabled="loading">
+              <Save v-if="profissionalEmEdicaoId" :size="18" aria-hidden="true" />
+              <Plus v-else :size="18" aria-hidden="true" />
+              <span>{{ profissionalEmEdicaoId ? 'Salvar' : 'Cadastrar' }}</span>
+            </button>
+            <button class="secondary-button" type="button" @click="fecharModalProfissional">
               <XCircle :size="18" aria-hidden="true" />
               <span>Cancelar</span>
             </button>
