@@ -493,15 +493,14 @@ onMounted(carregarDados)
       <p v-if="error" class="alert danger">{{ error }}</p>
 
       <section v-if="activeTab === 'agendamentos'" class="content-grid appointments-grid">
-        <div class="appointments-toolbar span-all">
-          <button class="primary-button" type="button" :disabled="loading" @click="abrirModalAgendamento">
-            <Plus :size="18" aria-hidden="true" />
-            <span>Novo agendamento</span>
-          </button>
-        </div>
-
-        <form class="panel form-panel" @submit.prevent="filtrarAgendamentos">
-          <h2>Filtros</h2>
+        <form class="panel appointment-filter-panel span-all" @submit.prevent="filtrarAgendamentos">
+          <div class="filter-header">
+            <h2>Filtros</h2>
+            <button class="primary-button" type="button" :disabled="loading" @click="abrirModalAgendamento">
+              <Plus :size="18" aria-hidden="true" />
+              <span>Novo agendamento</span>
+            </button>
+          </div>
           <label>
             <span>Busca</span>
             <input
@@ -546,7 +545,7 @@ onMounted(carregarDados)
               </option>
             </select>
           </label>
-          <div class="button-row">
+          <div class="filter-actions">
             <button class="secondary-button" type="submit" :disabled="loading">
               <Filter :size="18" aria-hidden="true" />
               <span>Filtrar</span>
