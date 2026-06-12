@@ -76,7 +76,7 @@ async function api(path, options = {}) {
   const data = text ? JSON.parse(text) : null
 
   if (!response.ok) {
-    throw new Error(data?.mensagem || 'Erro ao processar requisicao.')
+    throw new Error(data?.mensagem || 'Não foi possível completar a operação.')
   }
 
   return data
@@ -89,7 +89,9 @@ async function run(action, successMessage) {
 
   try {
     await action()
-    notice.value = successMessage
+    if (successMessage) {
+      notice.value = successMessage
+    }
   } catch (exception) {
     error.value = exception.message
   } finally {
@@ -108,7 +110,7 @@ async function carregarDados() {
     pacientes.value = pacientesData
     profissionais.value = profissionaisData
     agendamentos.value = agendamentosData
-  }, 'Dados atualizados.')
+  }, '')
 }
 
 async function salvarPaciente() {
@@ -222,14 +224,14 @@ onMounted(carregarDados)
   <main class="app-shell">
     <aside class="sidebar">
       <div class="brand">
-        <img src="/icons.svg" alt="" class="brand-mark" />
+        <div class="brand-mark" aria-hidden="true">MV</div>
         <div>
           <strong>Agendamentos MV</strong>
-          <span>API Spring + Vue</span>
+          <span>Gestão de atendimentos</span>
         </div>
       </div>
 
-      <nav class="tabs" aria-label="Navegacao principal">
+      <nav class="tabs" aria-label="Navegação principal">
         <button
           v-for="tab in tabs"
           :key="tab.key"
@@ -253,7 +255,7 @@ onMounted(carregarDados)
     <section class="workspace">
       <header class="topbar">
         <div>
-          <p class="eyebrow">Painel operacional</p>
+          <p class="eyebrow">Rotina de atendimento</p>
           <h1>{{ tabs.find((tab) => tab.key === activeTab)?.label }}</h1>
         </div>
         <div class="status-strip">
@@ -409,7 +411,7 @@ onMounted(carregarDados)
           <label><span>CPF</span><input v-model="pacienteForm.cpf" required /></label>
           <label><span>Idade</span><input v-model.number="pacienteForm.idade" min="0" type="number" required /></label>
           <label><span>Sexo</span><input v-model="pacienteForm.sexo" required /></label>
-          <label><span>Endereco</span><input v-model="pacienteForm.endereco" required /></label>
+          <label><span>Endereço</span><input v-model="pacienteForm.endereco" required /></label>
           <button class="primary-button" type="submit" :disabled="loading">
             <Plus :size="18" aria-hidden="true" />
             <span>Cadastrar</span>
@@ -461,7 +463,7 @@ onMounted(carregarDados)
           <h2>Novo profissional</h2>
           <label><span>Nome</span><input v-model="profissionalForm.nome" required /></label>
           <label><span>CRM</span><input v-model="profissionalForm.crm" required /></label>
-          <label><span>Area</span><input v-model="profissionalForm.area" required /></label>
+          <label><span>Área</span><input v-model="profissionalForm.area" required /></label>
           <button class="primary-button" type="submit" :disabled="loading">
             <Plus :size="18" aria-hidden="true" />
             <span>Cadastrar</span>
@@ -479,7 +481,7 @@ onMounted(carregarDados)
                 <tr>
                   <th>Nome</th>
                   <th>CRM</th>
-                  <th>Area</th>
+                  <th>Área</th>
                   <th>Status</th>
                   <th></th>
                 </tr>
