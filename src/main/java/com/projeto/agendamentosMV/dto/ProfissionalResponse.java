@@ -1,12 +1,13 @@
 package com.projeto.agendamentosMV.dto;
 
+import com.projeto.agendamentosMV.entity.AreaProfissional;
 import com.projeto.agendamentosMV.entity.Profissional;
 
 public record ProfissionalResponse(
         Long id,
         String nome,
         String crm,
-        String area,
+        AreaProfissional area,
         Boolean ativo) {
 
     public static ProfissionalResponse from(Profissional profissional) {

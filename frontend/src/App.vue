@@ -23,6 +23,22 @@ const tabs = [
   { key: 'profissionais', label: 'Profissionais', icon: Stethoscope },
 ]
 
+const sexos = [
+  { value: 'MASCULINO', label: 'Masculino' },
+  { value: 'FEMININO', label: 'Feminino' },
+  { value: 'OUTRO', label: 'Outro' },
+  { value: 'NAO_INFORMADO', label: 'Não informado' },
+]
+
+const areasProfissionais = [
+  { value: 'CLINICO_GERAL', label: 'Clínico geral' },
+  { value: 'CARDIOLOGIA', label: 'Cardiologia' },
+  { value: 'ORTOPEDIA', label: 'Ortopedia' },
+  { value: 'PSICOLOGIA', label: 'Psicologia' },
+  { value: 'PEDIATRIA', label: 'Pediatria' },
+  { value: 'FISIOTERAPIA', label: 'Fisioterapia' },
+]
+
 const activeTab = ref('agendamentos')
 const loading = ref(false)
 const notice = ref('')
@@ -302,6 +318,14 @@ function formatarData(dataHora) {
   }).format(new Date(dataHora))
 }
 
+function rotuloSexo(valor) {
+  return sexos.find((sexo) => sexo.value === valor)?.label || valor
+}
+
+function rotuloArea(valor) {
+  return areasProfissionais.find((area) => area.value === valor)?.label || valor
+}
+
 onMounted(carregarDados)
 </script>
 
@@ -482,6 +506,7 @@ onMounted(carregarDados)
                   <th>Nome</th>
                   <th>CPF</th>
                   <th>Idade</th>
+                  <th>Sexo</th>
                   <th>Status</th>
                   <th></th>
                 </tr>
@@ -491,6 +516,7 @@ onMounted(carregarDados)
                   <td>{{ paciente.nome }}</td>
                   <td>{{ paciente.cpf }}</td>
                   <td>{{ paciente.idade }}</td>
+                  <td>{{ rotuloSexo(paciente.sexo) }}</td>
                   <td><span class="badge" :class="paciente.ativo ? 'ativo' : 'inativo'">{{ paciente.ativo ? 'ATIVO' : 'INATIVO' }}</span></td>
                   <td class="actions">
                     <div class="action-buttons">
@@ -557,7 +583,7 @@ onMounted(carregarDados)
                 <tr v-for="profissional in profissionais" :key="profissional.id">
                   <td>{{ profissional.nome }}</td>
                   <td>{{ profissional.crm }}</td>
-                  <td>{{ profissional.area }}</td>
+                  <td>{{ rotuloArea(profissional.area) }}</td>
                   <td><span class="badge" :class="profissional.ativo ? 'ativo' : 'inativo'">{{ profissional.ativo ? 'ATIVO' : 'INATIVO' }}</span></td>
                   <td class="actions">
                     <div class="action-buttons">
@@ -630,7 +656,7 @@ onMounted(carregarDados)
                 :key="profissional.id"
                 :value="profissional.id"
               >
-                {{ profissional.nome }} - {{ profissional.area }}
+                {{ profissional.nome }} - {{ rotuloArea(profissional.area) }}
               </option>
             </select>
           </label>
@@ -670,7 +696,15 @@ onMounted(carregarDados)
           <label><span>Nome</span><input v-model="pacienteForm.nome" required /></label>
           <label><span>CPF</span><input v-model="pacienteForm.cpf" required /></label>
           <label><span>Data de nascimento</span><input v-model="pacienteForm.dataNascimento" type="date" required /></label>
-          <label><span>Sexo</span><input v-model="pacienteForm.sexo" required /></label>
+          <label>
+            <span>Sexo</span>
+            <select v-model="pacienteForm.sexo" required>
+              <option value="">Selecione</option>
+              <option v-for="sexo in sexos" :key="sexo.value" :value="sexo.value">
+                {{ sexo.label }}
+              </option>
+            </select>
+          </label>
           <label><span>Endereço</span><input v-model="pacienteForm.endereco" required /></label>
           <div class="button-row">
             <button class="primary-button" type="submit" :disabled="loading">
@@ -706,7 +740,15 @@ onMounted(carregarDados)
         <form class="modal-form" @submit.prevent="salvarProfissional">
           <label><span>Nome</span><input v-model="profissionalForm.nome" required /></label>
           <label><span>CRM</span><input v-model="profissionalForm.crm" required /></label>
-          <label><span>Área</span><input v-model="profissionalForm.area" required /></label>
+          <label>
+            <span>Área</span>
+            <select v-model="profissionalForm.area" required>
+              <option value="">Selecione</option>
+              <option v-for="area in areasProfissionais" :key="area.value" :value="area.value">
+                {{ area.label }}
+              </option>
+            </select>
+          </label>
           <div class="button-row">
             <button class="primary-button" type="submit" :disabled="loading">
               <Save v-if="profissionalEmEdicaoId" :size="18" aria-hidden="true" />

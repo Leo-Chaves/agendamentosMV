@@ -21,8 +21,10 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.projeto.agendamentosMV.entity.Agendamento;
+import com.projeto.agendamentosMV.entity.AreaProfissional;
 import com.projeto.agendamentosMV.entity.Paciente;
 import com.projeto.agendamentosMV.entity.Profissional;
+import com.projeto.agendamentosMV.entity.Sexo;
 import com.projeto.agendamentosMV.entity.StatusAgendamento;
 import com.projeto.agendamentosMV.service.AgendamentoService;
 
@@ -143,8 +145,8 @@ class AgendamentoControllerTest {
     }
 
     private Agendamento agendamento(LocalDateTime dataHora, StatusAgendamento status, String motivoCancelamento) {
-        Paciente paciente = new Paciente(1L, "Maria Silva", "12345678900", LocalDate.of(1996, 1, 1), "Feminino", "Rua A", List.of());
-        Profissional profissional = new Profissional(2L, "Ana Costa", "CRM12345", "Cardiologia", List.of());
+        Paciente paciente = new Paciente(1L, "Maria Silva", "12345678900", LocalDate.of(1996, 1, 1), Sexo.FEMININO, "Rua A", List.of());
+        Profissional profissional = new Profissional(2L, "Ana Costa", "CRM12345", AreaProfissional.CARDIOLOGIA, List.of());
 
         Agendamento agendamento = new Agendamento();
         agendamento.setId(10L);
@@ -157,4 +159,5 @@ class AgendamentoControllerTest {
         return agendamento;
     }
 }
+
 

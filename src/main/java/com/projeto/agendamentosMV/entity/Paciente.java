@@ -9,6 +9,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -41,8 +43,9 @@ public class Paciente {
     @Past
     private LocalDate dataNascimento;
 
-    @NotBlank
-    private String sexo;
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private Sexo sexo;
 
     @NotBlank
     private String endereco;
@@ -54,7 +57,7 @@ public class Paciente {
     @OneToMany(mappedBy = "paciente", cascade = CascadeType.ALL)
     private List<Agendamento> agendamentos = new ArrayList<>();
 
-    public Paciente(Long id, String nome, String cpf, LocalDate dataNascimento, String sexo, String endereco,
+    public Paciente(Long id, String nome, String cpf, LocalDate dataNascimento, Sexo sexo, String endereco,
             List<Agendamento> agendamentos) {
         this.id = id;
         this.nome = nome;

@@ -24,6 +24,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.projeto.agendamentosMV.entity.Paciente;
+import com.projeto.agendamentosMV.entity.Sexo;
 import com.projeto.agendamentosMV.service.PacienteService;
 
 @WebMvcTest(PacienteController.class)
@@ -37,7 +38,7 @@ class PacienteControllerTest {
 
     @Test
     void deveCadastrarPaciente() throws Exception {
-        Paciente pacienteSalvo = new Paciente(1L, "Maria Silva", "12345678900", LocalDate.of(1996, 1, 1), "Feminino", "Rua A",
+        Paciente pacienteSalvo = new Paciente(1L, "Maria Silva", "12345678900", LocalDate.of(1996, 1, 1), Sexo.FEMININO, "Rua A",
                 List.of());
 
         when(pacienteService.salvar(any(Paciente.class))).thenReturn(pacienteSalvo);
@@ -49,7 +50,7 @@ class PacienteControllerTest {
                           "nome": "Maria Silva",
                           "cpf": "12345678900",
                           "dataNascimento": "1996-01-01",
-                          "sexo": "Feminino",
+                          "sexo": "FEMININO",
                           "endereco": "Rua A"
                         }
                         """))
@@ -66,8 +67,8 @@ class PacienteControllerTest {
     @Test
     void deveListarPacientes() throws Exception {
         List<Paciente> pacientes = List.of(
-                new Paciente(1L, "Maria Silva", "12345678900", LocalDate.of(1996, 1, 1), "Feminino", "Rua A", List.of()),
-                new Paciente(2L, "Joao Souza", "98765432100", LocalDate.of(1985, 1, 1), "Masculino", "Rua B", List.of()));
+                new Paciente(1L, "Maria Silva", "12345678900", LocalDate.of(1996, 1, 1), Sexo.FEMININO, "Rua A", List.of()),
+                new Paciente(2L, "Joao Souza", "98765432100", LocalDate.of(1985, 1, 1), Sexo.MASCULINO, "Rua B", List.of()));
 
         when(pacienteService.listar()).thenReturn(pacientes);
 
@@ -80,7 +81,7 @@ class PacienteControllerTest {
 
     @Test
     void deveBuscarPacientePorId() throws Exception {
-        Paciente paciente = new Paciente(1L, "Maria Silva", "12345678900", LocalDate.of(1996, 1, 1), "Feminino", "Rua A", List.of());
+        Paciente paciente = new Paciente(1L, "Maria Silva", "12345678900", LocalDate.of(1996, 1, 1), Sexo.FEMININO, "Rua A", List.of());
 
         when(pacienteService.buscarPorId(1L)).thenReturn(paciente);
 
@@ -92,7 +93,7 @@ class PacienteControllerTest {
 
     @Test
     void deveAtualizarPaciente() throws Exception {
-        Paciente pacienteAtualizado = new Paciente(1L, "Maria Oliveira", "11122233344", LocalDate.of(1995, 1, 1), "Feminino", "Rua B",
+        Paciente pacienteAtualizado = new Paciente(1L, "Maria Oliveira", "11122233344", LocalDate.of(1995, 1, 1), Sexo.FEMININO, "Rua B",
                 List.of());
 
         when(pacienteService.atualizar(eq(1L), any(Paciente.class))).thenReturn(pacienteAtualizado);
@@ -104,7 +105,7 @@ class PacienteControllerTest {
                           "nome": "Maria Oliveira",
                           "cpf": "11122233344",
                           "dataNascimento": "1995-01-01",
-                          "sexo": "Feminino",
+                          "sexo": "FEMININO",
                           "endereco": "Rua B"
                         }
                         """))
@@ -148,7 +149,7 @@ class PacienteControllerTest {
 
     @Test
     void deveInativarPaciente() throws Exception {
-        Paciente paciente = new Paciente(1L, "Maria Silva", "12345678900", LocalDate.of(1996, 1, 1), "Feminino", "Rua A", List.of());
+        Paciente paciente = new Paciente(1L, "Maria Silva", "12345678900", LocalDate.of(1996, 1, 1), Sexo.FEMININO, "Rua A", List.of());
         paciente.setAtivo(false);
 
         when(pacienteService.inativar(1L)).thenReturn(paciente);
@@ -161,7 +162,7 @@ class PacienteControllerTest {
 
     @Test
     void deveAtivarPaciente() throws Exception {
-        Paciente paciente = new Paciente(1L, "Maria Silva", "12345678900", LocalDate.of(1996, 1, 1), "Feminino", "Rua A", List.of());
+        Paciente paciente = new Paciente(1L, "Maria Silva", "12345678900", LocalDate.of(1996, 1, 1), Sexo.FEMININO, "Rua A", List.of());
 
         when(pacienteService.ativar(1L)).thenReturn(paciente);
 
@@ -172,4 +173,5 @@ class PacienteControllerTest {
         verify(pacienteService).ativar(1L);
     }
 }
+
 

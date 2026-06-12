@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.Period;
 
 import com.projeto.agendamentosMV.entity.Paciente;
+import com.projeto.agendamentosMV.entity.Sexo;
 
 public record PacienteResponse(
         Long id,
@@ -11,7 +12,7 @@ public record PacienteResponse(
         String cpf,
         LocalDate dataNascimento,
         Integer idade,
-        String sexo,
+        Sexo sexo,
         String endereco,
         Boolean ativo) {
 

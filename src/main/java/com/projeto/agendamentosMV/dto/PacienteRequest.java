@@ -3,6 +3,7 @@ package com.projeto.agendamentosMV.dto;
 import java.time.LocalDate;
 
 import com.projeto.agendamentosMV.entity.Paciente;
+import com.projeto.agendamentosMV.entity.Sexo;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -12,7 +13,7 @@ public record PacienteRequest(
         @NotBlank String nome,
         @NotBlank String cpf,
         @NotNull @Past LocalDate dataNascimento,
-        @NotBlank String sexo,
+        @NotNull Sexo sexo,
         @NotBlank String endereco) {
 
     public Paciente toEntity() {

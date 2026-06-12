@@ -21,8 +21,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.projeto.agendamentosMV.entity.Agendamento;
+import com.projeto.agendamentosMV.entity.AreaProfissional;
 import com.projeto.agendamentosMV.entity.Paciente;
 import com.projeto.agendamentosMV.entity.Profissional;
+import com.projeto.agendamentosMV.entity.Sexo;
 import com.projeto.agendamentosMV.entity.StatusAgendamento;
 import com.projeto.agendamentosMV.repository.AgendamentoRepository;
 
@@ -44,8 +46,8 @@ class AgendamentoServiceTest {
     @Test
     void deveCriarAgendamentoQuandoHorarioEstiverDisponivel() {
         LocalDateTime dataHora = LocalDateTime.of(2026, 7, 10, 14, 0);
-        Paciente paciente = new Paciente(1L, "Maria Silva", "12345678900", LocalDate.of(1996, 1, 1), "Feminino", "Rua A", List.of());
-        Profissional profissional = new Profissional(1L, "Ana Costa", "CRM12345", "Cardiologia", List.of());
+        Paciente paciente = new Paciente(1L, "Maria Silva", "12345678900", LocalDate.of(1996, 1, 1), Sexo.FEMININO, "Rua A", List.of());
+        Profissional profissional = new Profissional(1L, "Ana Costa", "CRM12345", AreaProfissional.CARDIOLOGIA, List.of());
 
         when(pacienteService.buscarPorId(1L)).thenReturn(paciente);
         when(profissionalService.buscarPorId(1L)).thenReturn(profissional);
@@ -79,8 +81,8 @@ class AgendamentoServiceTest {
     @Test
     void deveLancarErroQuandoPacienteJaTiverAgendamentoNoMesmoHorario() {
         LocalDateTime dataHora = LocalDateTime.of(2026, 7, 10, 14, 0);
-        Paciente paciente = new Paciente(1L, "Maria Silva", "12345678900", LocalDate.of(1996, 1, 1), "Feminino", "Rua A", List.of());
-        Profissional profissional = new Profissional(1L, "Ana Costa", "CRM12345", "Cardiologia", List.of());
+        Paciente paciente = new Paciente(1L, "Maria Silva", "12345678900", LocalDate.of(1996, 1, 1), Sexo.FEMININO, "Rua A", List.of());
+        Profissional profissional = new Profissional(1L, "Ana Costa", "CRM12345", AreaProfissional.CARDIOLOGIA, List.of());
 
         when(pacienteService.buscarPorId(1L)).thenReturn(paciente);
         when(profissionalService.buscarPorId(1L)).thenReturn(profissional);
@@ -102,8 +104,8 @@ class AgendamentoServiceTest {
     @Test
     void deveLancarErroQuandoPacienteTiverAgendamentoSobreposto() {
         LocalDateTime dataHora = LocalDateTime.of(2026, 7, 10, 10, 15);
-        Paciente paciente = new Paciente(1L, "Maria Silva", "12345678900", LocalDate.of(1996, 1, 1), "Feminino", "Rua A", List.of());
-        Profissional profissional = new Profissional(2L, "Ana Costa", "CRM12345", "Cardiologia", List.of());
+        Paciente paciente = new Paciente(1L, "Maria Silva", "12345678900", LocalDate.of(1996, 1, 1), Sexo.FEMININO, "Rua A", List.of());
+        Profissional profissional = new Profissional(2L, "Ana Costa", "CRM12345", AreaProfissional.CARDIOLOGIA, List.of());
 
         when(pacienteService.buscarPorId(1L)).thenReturn(paciente);
         when(profissionalService.buscarPorId(2L)).thenReturn(profissional);
@@ -125,8 +127,8 @@ class AgendamentoServiceTest {
     @Test
     void deveLancarErroQuandoDataHoraForPassada() {
         LocalDateTime dataHora = LocalDateTime.now().minusDays(1);
-        Paciente paciente = new Paciente(1L, "Maria Silva", "12345678900", LocalDate.of(1996, 1, 1), "Feminino", "Rua A", List.of());
-        Profissional profissional = new Profissional(1L, "Ana Costa", "CRM12345", "Cardiologia", List.of());
+        Paciente paciente = new Paciente(1L, "Maria Silva", "12345678900", LocalDate.of(1996, 1, 1), Sexo.FEMININO, "Rua A", List.of());
+        Profissional profissional = new Profissional(1L, "Ana Costa", "CRM12345", AreaProfissional.CARDIOLOGIA, List.of());
 
         when(pacienteService.buscarPorId(1L)).thenReturn(paciente);
         when(profissionalService.buscarPorId(1L)).thenReturn(profissional);
@@ -142,8 +144,8 @@ class AgendamentoServiceTest {
     @Test
     void deveLancarErroQuandoProfissionalJaTiverAgendamentoNoMesmoHorario() {
         LocalDateTime dataHora = LocalDateTime.of(2026, 7, 10, 14, 0);
-        Paciente paciente = new Paciente(1L, "Maria Silva", "12345678900", LocalDate.of(1996, 1, 1), "Feminino", "Rua A", List.of());
-        Profissional profissional = new Profissional(1L, "Ana Costa", "CRM12345", "Cardiologia", List.of());
+        Paciente paciente = new Paciente(1L, "Maria Silva", "12345678900", LocalDate.of(1996, 1, 1), Sexo.FEMININO, "Rua A", List.of());
+        Profissional profissional = new Profissional(1L, "Ana Costa", "CRM12345", AreaProfissional.CARDIOLOGIA, List.of());
 
         when(pacienteService.buscarPorId(1L)).thenReturn(paciente);
         when(profissionalService.buscarPorId(1L)).thenReturn(profissional);
@@ -170,8 +172,8 @@ class AgendamentoServiceTest {
     @Test
     void deveLancarErroQuandoProfissionalTiverAgendamentoSobreposto() {
         LocalDateTime dataHora = LocalDateTime.of(2026, 7, 10, 10, 0);
-        Paciente paciente = new Paciente(1L, "Maria Silva", "12345678900", LocalDate.of(1996, 1, 1), "Feminino", "Rua A", List.of());
-        Profissional profissional = new Profissional(1L, "Ana Costa", "CRM12345", "Cardiologia", List.of());
+        Paciente paciente = new Paciente(1L, "Maria Silva", "12345678900", LocalDate.of(1996, 1, 1), Sexo.FEMININO, "Rua A", List.of());
+        Profissional profissional = new Profissional(1L, "Ana Costa", "CRM12345", AreaProfissional.CARDIOLOGIA, List.of());
 
         when(pacienteService.buscarPorId(1L)).thenReturn(paciente);
         when(profissionalService.buscarPorId(1L)).thenReturn(profissional);
@@ -198,8 +200,8 @@ class AgendamentoServiceTest {
     @Test
     void deveLancarErroQuandoPacienteEstiverInativo() {
         LocalDateTime dataHora = LocalDateTime.of(2026, 7, 10, 14, 0);
-        Paciente paciente = new Paciente(1L, "Maria Silva", "12345678900", LocalDate.of(1996, 1, 1), "Feminino", "Rua A", List.of());
-        Profissional profissional = new Profissional(1L, "Ana Costa", "CRM12345", "Cardiologia", List.of());
+        Paciente paciente = new Paciente(1L, "Maria Silva", "12345678900", LocalDate.of(1996, 1, 1), Sexo.FEMININO, "Rua A", List.of());
+        Profissional profissional = new Profissional(1L, "Ana Costa", "CRM12345", AreaProfissional.CARDIOLOGIA, List.of());
         paciente.setAtivo(false);
 
         when(pacienteService.buscarPorId(1L)).thenReturn(paciente);
@@ -216,8 +218,8 @@ class AgendamentoServiceTest {
     @Test
     void deveLancarErroQuandoProfissionalEstiverInativo() {
         LocalDateTime dataHora = LocalDateTime.of(2026, 7, 10, 14, 0);
-        Paciente paciente = new Paciente(1L, "Maria Silva", "12345678900", LocalDate.of(1996, 1, 1), "Feminino", "Rua A", List.of());
-        Profissional profissional = new Profissional(1L, "Ana Costa", "CRM12345", "Cardiologia", List.of());
+        Paciente paciente = new Paciente(1L, "Maria Silva", "12345678900", LocalDate.of(1996, 1, 1), Sexo.FEMININO, "Rua A", List.of());
+        Profissional profissional = new Profissional(1L, "Ana Costa", "CRM12345", AreaProfissional.CARDIOLOGIA, List.of());
         profissional.setAtivo(false);
 
         when(pacienteService.buscarPorId(1L)).thenReturn(paciente);
@@ -308,4 +310,5 @@ class AgendamentoServiceTest {
         verify(agendamentoRepository, never()).save(any(Agendamento.class));
     }
 }
+
 

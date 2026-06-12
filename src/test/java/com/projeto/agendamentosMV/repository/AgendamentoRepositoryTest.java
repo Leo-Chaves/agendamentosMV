@@ -12,8 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 
 import com.projeto.agendamentosMV.entity.Agendamento;
+import com.projeto.agendamentosMV.entity.AreaProfissional;
 import com.projeto.agendamentosMV.entity.Paciente;
 import com.projeto.agendamentosMV.entity.Profissional;
+import com.projeto.agendamentosMV.entity.Sexo;
 import com.projeto.agendamentosMV.entity.StatusAgendamento;
 
 import jakarta.persistence.EntityManager;
@@ -101,13 +103,13 @@ class AgendamentoRepositoryTest {
     }
 
     private Paciente salvarPaciente(String cpf) {
-        Paciente paciente = new Paciente(null, "Maria Silva", cpf, LocalDate.of(1996, 1, 1), "Feminino", "Rua A", List.of());
+        Paciente paciente = new Paciente(null, "Maria Silva", cpf, LocalDate.of(1996, 1, 1), Sexo.FEMININO, "Rua A", List.of());
         entityManager.persist(paciente);
         return paciente;
     }
 
     private Profissional salvarProfissional(String crm) {
-        Profissional profissional = new Profissional(null, "Ana Costa", crm, "Cardiologia", List.of());
+        Profissional profissional = new Profissional(null, "Ana Costa", crm, AreaProfissional.CARDIOLOGIA, List.of());
         entityManager.persist(profissional);
         return profissional;
     }
@@ -126,4 +128,5 @@ class AgendamentoRepositoryTest {
         entityManager.flush();
     }
 }
+
 

@@ -17,6 +17,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.projeto.agendamentosMV.entity.AreaProfissional;
 import com.projeto.agendamentosMV.entity.Profissional;
 import com.projeto.agendamentosMV.repository.ProfissionalRepository;
 
@@ -31,8 +32,8 @@ class ProfissionalServiceTest {
 
     @Test
     void deveSalvarProfissional() {
-        Profissional profissional = new Profissional(null, "Ana Costa", "CRM12345", "Cardiologia", List.of());
-        Profissional profissionalSalvo = new Profissional(1L, "Ana Costa", "CRM12345", "Cardiologia", List.of());
+        Profissional profissional = new Profissional(null, "Ana Costa", "CRM12345", AreaProfissional.CARDIOLOGIA, List.of());
+        Profissional profissionalSalvo = new Profissional(1L, "Ana Costa", "CRM12345", AreaProfissional.CARDIOLOGIA, List.of());
 
         when(profissionalRepository.save(profissional)).thenReturn(profissionalSalvo);
 
@@ -41,15 +42,15 @@ class ProfissionalServiceTest {
         assertEquals(1L, resultado.getId());
         assertEquals("Ana Costa", resultado.getNome());
         assertEquals("CRM12345", resultado.getCrm());
-        assertEquals("Cardiologia", resultado.getArea());
+        assertEquals(AreaProfissional.CARDIOLOGIA, resultado.getArea());
         verify(profissionalRepository).save(profissional);
     }
 
     @Test
     void deveAtualizarProfissionalMantendoStatusAtual() {
-        Profissional profissional = new Profissional(1L, "Ana Costa", "CRM12345", "Cardiologia", List.of());
+        Profissional profissional = new Profissional(1L, "Ana Costa", "CRM12345", AreaProfissional.CARDIOLOGIA, List.of());
         profissional.setAtivo(false);
-        Profissional dadosAtualizados = new Profissional(null, "Ana Lima", "CRM54321", "Pediatria", List.of());
+        Profissional dadosAtualizados = new Profissional(null, "Ana Lima", "CRM54321", AreaProfissional.PEDIATRIA, List.of());
 
         when(profissionalRepository.findById(1L)).thenReturn(Optional.of(profissional));
         when(profissionalRepository.save(profissional)).thenReturn(profissional);
@@ -58,7 +59,7 @@ class ProfissionalServiceTest {
 
         assertEquals("Ana Lima", resultado.getNome());
         assertEquals("CRM54321", resultado.getCrm());
-        assertEquals("Pediatria", resultado.getArea());
+        assertEquals(AreaProfissional.PEDIATRIA, resultado.getArea());
         assertFalse(resultado.getAtivo());
         verify(profissionalRepository).save(profissional);
     }
@@ -66,8 +67,8 @@ class ProfissionalServiceTest {
     @Test
     void deveListarProfissionais() {
         List<Profissional> profissionais = List.of(
-                new Profissional(1L, "Ana Costa", "CRM12345", "Cardiologia", List.of()),
-                new Profissional(2L, "Bruno Lima", "CRM67890", "Ortopedia", List.of()));
+                new Profissional(1L, "Ana Costa", "CRM12345", AreaProfissional.CARDIOLOGIA, List.of()),
+                new Profissional(2L, "Bruno Lima", "CRM67890", AreaProfissional.ORTOPEDIA, List.of()));
 
         when(profissionalRepository.findAll()).thenReturn(profissionais);
 
@@ -80,7 +81,7 @@ class ProfissionalServiceTest {
 
     @Test
     void deveBuscarProfissionalPorId() {
-        Profissional profissional = new Profissional(1L, "Ana Costa", "CRM12345", "Cardiologia", List.of());
+        Profissional profissional = new Profissional(1L, "Ana Costa", "CRM12345", AreaProfissional.CARDIOLOGIA, List.of());
 
         when(profissionalRepository.findById(1L)).thenReturn(Optional.of(profissional));
 
@@ -105,7 +106,7 @@ class ProfissionalServiceTest {
 
     @Test
     void deveInativarProfissionalSemRemoverRegistro() {
-        Profissional profissional = new Profissional(1L, "Ana Costa", "CRM12345", "Cardiologia", List.of());
+        Profissional profissional = new Profissional(1L, "Ana Costa", "CRM12345", AreaProfissional.CARDIOLOGIA, List.of());
 
         when(profissionalRepository.findById(1L)).thenReturn(Optional.of(profissional));
         when(profissionalRepository.save(profissional)).thenReturn(profissional);
@@ -118,7 +119,7 @@ class ProfissionalServiceTest {
 
     @Test
     void deveAtivarProfissionalInativo() {
-        Profissional profissional = new Profissional(1L, "Ana Costa", "CRM12345", "Cardiologia", List.of());
+        Profissional profissional = new Profissional(1L, "Ana Costa", "CRM12345", AreaProfissional.CARDIOLOGIA, List.of());
         profissional.setAtivo(false);
 
         when(profissionalRepository.findById(1L)).thenReturn(Optional.of(profissional));
@@ -130,3 +131,4 @@ class ProfissionalServiceTest {
         verify(profissionalRepository).save(profissional);
     }
 }
+

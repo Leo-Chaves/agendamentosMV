@@ -119,7 +119,7 @@ POST /pacientes
   "nome": "Maria Silva",
   "cpf": "12345678900",
   "dataNascimento": "1996-01-01",
-  "sexo": "Feminino",
+  "sexo": "FEMININO",
   "endereco": "Rua A"
 }
 ```
@@ -166,7 +166,7 @@ POST /profissionais
 {
   "nome": "Ana Costa",
   "crm": "CRM12345",
-  "area": "Cardiologia"
+  "area": "CARDIOLOGIA"
 }
 ```
 
@@ -262,7 +262,20 @@ PATCH /agendamentos/{id}/cancelar
 - Pacientes e profissionais inativos podem ser ativados novamente.
 - Os dados cadastrais de pacientes e profissionais podem ser atualizados sem alterar o histórico.
 - Pacientes armazenam data de nascimento; a idade é calculada na resposta da API.
+- Sexo e área profissional usam enums para evitar variações de digitação.
 - Pacientes ou profissionais inativos não podem receber novos agendamentos.
+
+Valores de `sexo`:
+
+```text
+MASCULINO, FEMININO, OUTRO, NAO_INFORMADO
+```
+
+Valores de `area`:
+
+```text
+CLINICO_GERAL, CARDIOLOGIA, ORTOPEDIA, PSICOLOGIA, PEDIATRIA, FISIOTERAPIA
+```
 
 ## Decisões técnicas
 

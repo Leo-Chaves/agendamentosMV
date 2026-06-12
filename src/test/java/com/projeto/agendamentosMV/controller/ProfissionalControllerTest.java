@@ -22,6 +22,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import com.projeto.agendamentosMV.entity.AreaProfissional;
 import com.projeto.agendamentosMV.entity.Profissional;
 import com.projeto.agendamentosMV.service.ProfissionalService;
 
@@ -36,7 +37,7 @@ class ProfissionalControllerTest {
 
     @Test
     void deveCadastrarProfissional() throws Exception {
-        Profissional profissionalSalvo = new Profissional(1L, "Ana Costa", "CRM12345", "Cardiologia", List.of());
+        Profissional profissionalSalvo = new Profissional(1L, "Ana Costa", "CRM12345", AreaProfissional.CARDIOLOGIA, List.of());
 
         when(profissionalService.salvar(any(Profissional.class))).thenReturn(profissionalSalvo);
 
@@ -46,14 +47,14 @@ class ProfissionalControllerTest {
                         {
                           "nome": "Ana Costa",
                           "crm": "CRM12345",
-                          "area": "Cardiologia"
+                          "area": "CARDIOLOGIA"
                         }
                         """))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.nome").value("Ana Costa"))
                 .andExpect(jsonPath("$.crm").value("CRM12345"))
-                .andExpect(jsonPath("$.area").value("Cardiologia"));
+                .andExpect(jsonPath("$.area").value("CARDIOLOGIA"));
 
         verify(profissionalService).salvar(any(Profissional.class));
     }
@@ -61,8 +62,8 @@ class ProfissionalControllerTest {
     @Test
     void deveListarProfissionais() throws Exception {
         List<Profissional> profissionais = List.of(
-                new Profissional(1L, "Ana Costa", "CRM12345", "Cardiologia", List.of()),
-                new Profissional(2L, "Bruno Lima", "CRM67890", "Ortopedia", List.of()));
+                new Profissional(1L, "Ana Costa", "CRM12345", AreaProfissional.CARDIOLOGIA, List.of()),
+                new Profissional(2L, "Bruno Lima", "CRM67890", AreaProfissional.ORTOPEDIA, List.of()));
 
         when(profissionalService.listar()).thenReturn(profissionais);
 
@@ -75,7 +76,7 @@ class ProfissionalControllerTest {
 
     @Test
     void deveBuscarProfissionalPorId() throws Exception {
-        Profissional profissional = new Profissional(1L, "Ana Costa", "CRM12345", "Cardiologia", List.of());
+        Profissional profissional = new Profissional(1L, "Ana Costa", "CRM12345", AreaProfissional.CARDIOLOGIA, List.of());
 
         when(profissionalService.buscarPorId(1L)).thenReturn(profissional);
 
@@ -87,7 +88,7 @@ class ProfissionalControllerTest {
 
     @Test
     void deveAtualizarProfissional() throws Exception {
-        Profissional profissionalAtualizado = new Profissional(1L, "Ana Lima", "CRM54321", "Pediatria", List.of());
+        Profissional profissionalAtualizado = new Profissional(1L, "Ana Lima", "CRM54321", AreaProfissional.PEDIATRIA, List.of());
 
         when(profissionalService.atualizar(eq(1L), any(Profissional.class))).thenReturn(profissionalAtualizado);
 
@@ -97,14 +98,14 @@ class ProfissionalControllerTest {
                         {
                           "nome": "Ana Lima",
                           "crm": "CRM54321",
-                          "area": "Pediatria"
+                          "area": "PEDIATRIA"
                         }
                         """))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.nome").value("Ana Lima"))
                 .andExpect(jsonPath("$.crm").value("CRM54321"))
-                .andExpect(jsonPath("$.area").value("Pediatria"));
+                .andExpect(jsonPath("$.area").value("PEDIATRIA"));
 
         verify(profissionalService).atualizar(eq(1L), any(Profissional.class));
     }
@@ -137,7 +138,7 @@ class ProfissionalControllerTest {
 
     @Test
     void deveInativarProfissional() throws Exception {
-        Profissional profissional = new Profissional(1L, "Ana Costa", "CRM12345", "Cardiologia", List.of());
+        Profissional profissional = new Profissional(1L, "Ana Costa", "CRM12345", AreaProfissional.CARDIOLOGIA, List.of());
         profissional.setAtivo(false);
 
         when(profissionalService.inativar(1L)).thenReturn(profissional);
@@ -150,7 +151,7 @@ class ProfissionalControllerTest {
 
     @Test
     void deveAtivarProfissional() throws Exception {
-        Profissional profissional = new Profissional(1L, "Ana Costa", "CRM12345", "Cardiologia", List.of());
+        Profissional profissional = new Profissional(1L, "Ana Costa", "CRM12345", AreaProfissional.CARDIOLOGIA, List.of());
 
         when(profissionalService.ativar(1L)).thenReturn(profissional);
 
@@ -161,3 +162,4 @@ class ProfissionalControllerTest {
         verify(profissionalService).ativar(1L);
     }
 }
+

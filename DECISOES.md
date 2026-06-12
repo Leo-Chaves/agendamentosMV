@@ -105,6 +105,32 @@ Motivos:
 - data de nascimento é um dado estável do cadastro;
 - a idade pode ser calculada na resposta da API e exibida no frontend quando necessário.
 
+## Enums para sexo e área profissional
+
+Os campos `sexo` e `area` foram modelados como enums.
+
+Valores de `Sexo`:
+
+- `MASCULINO`;
+- `FEMININO`;
+- `OUTRO`;
+- `NAO_INFORMADO`.
+
+Valores de `AreaProfissional`:
+
+- `CLINICO_GERAL`;
+- `CARDIOLOGIA`;
+- `ORTOPEDIA`;
+- `PSICOLOGIA`;
+- `PEDIATRIA`;
+- `FISIOTERAPIA`.
+
+Motivos:
+
+- evitar variações de digitação;
+- padronizar os dados gravados no banco;
+- facilitar validação no backend e seleção por lista no frontend.
+
 ## Relacionamentos
 
 Um paciente pode ter vários agendamentos.
@@ -228,5 +254,9 @@ Motivos:
 - A partirde agora cada agendamento tem um tempo minimo, os sistema entende que cada agendamento dura em torno de 30 minutos e bloqueia o proficional e usuario 
 
 - Optei por ser um atributo do sistema, ou seja para alterar so ajustando o codigo. Achei melhor fazer dessa formar ao inves de agendamentos terem tempo diferente(menos poluição no front), mas caso fosse um sistema para multi-empresas podesse ser melhor 
+
+## Achei melhor armazenar a data de nascimento do que a apenas a idade 
+
+## Não irei colocar validador de CPF para avaliadores testaerem de forma mais pratica 
 
 
