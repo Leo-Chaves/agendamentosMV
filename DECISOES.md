@@ -176,6 +176,12 @@ Valores iniciais:
 - `CANCELADO`;
 - `REALIZADO`.
 
+Agendamentos não mudam automaticamente para `REALIZADO` apenas porque a data/hora passou.
+
+A conclusão do atendimento é uma ação explícita do usuário, pois um horário passado pode representar atendimento realizado, falta do paciente ou falha operacional.
+
+Somente agendamentos com status `AGENDADO` podem ser marcados como `REALIZADO`.
+
 ## Desenvolvimento orientado a testes
 
 O projeto seguirá uma abordagem orientada a testes (TDD) nas regras de negócio.
@@ -211,7 +217,9 @@ O `AgendamentoServiceTest` cobre:
 - buscar agendamento por id;
 - lançar erro quando o agendamento não for encontrado;
 - cancelar agendamento registrando motivo;
-- impedir cancelamento sem motivo.
+- impedir cancelamento sem motivo;
+- marcar agendamento como realizado;
+- impedir marcar como realizado um agendamento que não esteja `AGENDADO`.
 
 ## Ideia
 
@@ -232,6 +240,8 @@ Regras iniciais:
 - todo novo agendamento começa com status `AGENDADO`;
 - agendamentos cancelados recebem o status `CANCELADO`;
 - todo cancelamento deve registrar um motivo;
+- agendamentos agendados podem ser marcados como `REALIZADO`;
+- agendamentos cancelados não podem ser marcados como realizados;
 - o registro do agendamento deve ser mantido após o cancelamento;
 - a listagem de agendamentos deve permitir filtros opcionais por paciente, profissional ou status.
 

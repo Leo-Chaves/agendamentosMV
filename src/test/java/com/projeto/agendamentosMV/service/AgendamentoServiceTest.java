@@ -300,6 +300,37 @@ class AgendamentoServiceTest {
     }
 
     @Test
+    void deveMarcarAgendamentoComoRealizado() {
+        Agendamento agendamento = new Agendamento();
+        agendamento.setId(1L);
+        agendamento.setStatus(StatusAgendamento.AGENDADO);
+
+        when(agendamentoRepository.findById(1L)).thenReturn(Optional.of(agendamento));
+        when(agendamentoRepository.save(agendamento)).thenReturn(agendamento);
+
+        Agendamento resultado = agendamentoService.realizar(1L);
+
+        assertEquals(StatusAgendamento.REALIZADO, resultado.getStatus());
+        verify(agendamentoRepository).save(agendamento);
+    }
+
+    @Test
+    void deveLancarErroQuandoAgendamentoCanceladoForMarcadoComoRealizado() {
+        Agendamento agendamento = new Agendamento();
+        agendamento.setId(1L);
+        agendamento.setStatus(StatusAgendamento.CANCELADO);
+
+        when(agendamentoRepository.findById(1L)).thenReturn(Optional.of(agendamento));
+
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> agendamentoService.realizar(1L));
+
+        assertEquals("Apenas agendamentos agendados podem ser realizados.", exception.getMessage());
+        verify(agendamentoRepository, never()).save(any(Agendamento.class));
+    }
+
+    @Test
     void deveLancarErroQuandoMotivoCancelamentoNaoForInformado() {
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,

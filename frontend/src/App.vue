@@ -373,6 +373,13 @@ function fecharModalCancelamento() {
   Object.assign(cancelamento, { agendamentoId: '', motivo: '' })
 }
 
+async function realizarAgendamento(id) {
+  await run(async () => {
+    await api(`/agendamentos/${id}/realizar`, { method: 'PATCH' })
+    await buscarAgendamentos()
+  }, 'Agendamento marcado como realizado.')
+}
+
 async function inativarPaciente(id) {
   await run(async () => {
     await api(`/pacientes/${id}`, { method: 'DELETE' })
@@ -587,15 +594,26 @@ onMounted(carregarDados)
                   </td>
                   <td>{{ agendamento.motivoCancelamento || '-' }}</td>
                   <td class="actions">
-                    <button
-                      v-if="agendamento.status === 'AGENDADO'"
-                      class="icon-button danger-icon"
-                      type="button"
-                      title="Cancelar agendamento"
-                      @click="abrirModalCancelamento(agendamento)"
-                    >
-                      <Ban :size="18" aria-hidden="true" />
-                    </button>
+                    <div v-if="agendamento.status === 'AGENDADO'" class="action-buttons">
+                      <button
+                        class="icon-button success-icon"
+                        type="button"
+                        title="Marcar como realizado"
+                        :disabled="loading"
+                        @click="realizarAgendamento(agendamento.id)"
+                      >
+                        <CheckCircle2 :size="18" aria-hidden="true" />
+                      </button>
+                      <button
+                        class="icon-button danger-icon"
+                        type="button"
+                        title="Cancelar agendamento"
+                        :disabled="loading"
+                        @click="abrirModalCancelamento(agendamento)"
+                      >
+                        <Ban :size="18" aria-hidden="true" />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               </tbody>

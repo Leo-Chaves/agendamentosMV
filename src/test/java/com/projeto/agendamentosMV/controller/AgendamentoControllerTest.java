@@ -113,6 +113,20 @@ class AgendamentoControllerTest {
     }
 
     @Test
+    void deveMarcarAgendamentoComoRealizado() throws Exception {
+        LocalDateTime dataHora = LocalDateTime.of(2026, 7, 10, 14, 0);
+        Agendamento agendamento = agendamento(dataHora, StatusAgendamento.REALIZADO, null);
+
+        when(agendamentoService.realizar(10L)).thenReturn(agendamento);
+
+        mockMvc.perform(patch("/agendamentos/10/realizar"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("REALIZADO"));
+
+        verify(agendamentoService).realizar(10L);
+    }
+
+    @Test
     void deveRetornarBadRequestQuandoCriacaoTiverPayloadInvalido() throws Exception {
         mockMvc.perform(post("/agendamentos")
                 .contentType(MediaType.APPLICATION_JSON)

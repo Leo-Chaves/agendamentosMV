@@ -248,6 +248,12 @@ PATCH /agendamentos/{id}/cancelar
 }
 ```
 
+Marcar agendamento como realizado:
+
+```http
+PATCH /agendamentos/{id}/realizar
+```
+
 ## Regras de negócio
 
 - Um profissional não pode ter dois agendamentos ativos no mesmo horário.
@@ -258,6 +264,7 @@ PATCH /agendamentos/{id}/cancelar
 - Não é permitido criar agendamento para data/hora passada.
 - Todo novo agendamento começa com status `AGENDADO`.
 - Cancelamentos registram motivo e mudam o status para `CANCELADO`.
+- Agendamentos com status `AGENDADO` podem ser marcados como `REALIZADO`.
 - Agendamentos cancelados ou realizados são mantidos como histórico.
 - A listagem de agendamentos permite filtro por paciente, profissional ou status.
 - Pacientes e profissionais são inativados logicamente, sem remoção física.

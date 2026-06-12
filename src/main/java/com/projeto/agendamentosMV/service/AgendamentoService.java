@@ -71,6 +71,14 @@ public class AgendamentoService {
         return agendamentoRepository.save(agendamento);
     }
 
+    public Agendamento realizar(Long id) {
+        Agendamento agendamento = buscarPorId(id);
+        validarAgendamentoPodeSerRealizado(agendamento);
+
+        agendamento.setStatus(StatusAgendamento.REALIZADO);
+        return agendamentoRepository.save(agendamento);
+    }
+
     private void validarDisponibilidade(Long pacienteId, Long profissionalId, LocalDateTime dataHora) {
         LocalDateTime inicioJanelaConflito = dataHora.minusMinutes(duracaoMinutos);
         LocalDateTime fimNovoAgendamento = dataHora.plusMinutes(duracaoMinutos);
@@ -106,6 +114,12 @@ public class AgendamentoService {
     private void validarMotivoCancelamento(String motivoCancelamento) {
         if (motivoCancelamento == null || motivoCancelamento.isBlank()) {
             throw new IllegalArgumentException("Motivo do cancelamento deve ser informado.");
+        }
+    }
+
+    private void validarAgendamentoPodeSerRealizado(Agendamento agendamento) {
+        if (agendamento.getStatus() != StatusAgendamento.AGENDADO) {
+            throw new IllegalArgumentException("Apenas agendamentos agendados podem ser realizados.");
         }
     }
 

@@ -66,4 +66,9 @@ public class AgendamentoController {
 
         return AgendamentoResponse.from(agendamentoService.cancelar(id, request.motivo()));
     }
+
+    @PatchMapping("/{id}/realizar")
+    public AgendamentoResponse realizar(@PathVariable Long id) {
+        return AgendamentoResponse.from(agendamentoService.realizar(id));
+    }
 }
