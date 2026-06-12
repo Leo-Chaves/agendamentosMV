@@ -118,7 +118,7 @@ POST /pacientes
 {
   "nome": "Maria Silva",
   "cpf": "12345678900",
-  "idade": 30,
+  "dataNascimento": "1996-01-01",
   "sexo": "Feminino",
   "endereco": "Rua A"
 }
@@ -261,6 +261,7 @@ PATCH /agendamentos/{id}/cancelar
 - Pacientes e profissionais são inativados logicamente, sem remoção física.
 - Pacientes e profissionais inativos podem ser ativados novamente.
 - Os dados cadastrais de pacientes e profissionais podem ser atualizados sem alterar o histórico.
+- Pacientes armazenam data de nascimento; a idade é calculada na resposta da API.
 - Pacientes ou profissionais inativos não podem receber novos agendamentos.
 
 ## Decisões técnicas

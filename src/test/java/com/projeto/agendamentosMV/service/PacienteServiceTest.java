@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,8 +32,8 @@ class PacienteServiceTest {
 
     @Test
     void deveSalvarPaciente() {
-        Paciente paciente = new Paciente(null, "Maria Silva", "12345678900", 30, "Feminino", "Rua A", List.of());
-        Paciente pacienteSalvo = new Paciente(1L, "Maria Silva", "12345678900", 30, "Feminino", "Rua A", List.of());
+        Paciente paciente = new Paciente(null, "Maria Silva", "12345678900", LocalDate.of(1996, 1, 1), "Feminino", "Rua A", List.of());
+        Paciente pacienteSalvo = new Paciente(1L, "Maria Silva", "12345678900", LocalDate.of(1996, 1, 1), "Feminino", "Rua A", List.of());
 
         when(pacienteRepository.save(paciente)).thenReturn(pacienteSalvo);
 
@@ -46,9 +47,9 @@ class PacienteServiceTest {
 
     @Test
     void deveAtualizarPacienteMantendoStatusAtual() {
-        Paciente paciente = new Paciente(1L, "Maria Silva", "12345678900", 30, "Feminino", "Rua A", List.of());
+        Paciente paciente = new Paciente(1L, "Maria Silva", "12345678900", LocalDate.of(1996, 1, 1), "Feminino", "Rua A", List.of());
         paciente.setAtivo(false);
-        Paciente dadosAtualizados = new Paciente(null, "Maria Oliveira", "11122233344", 31, "Feminino", "Rua B",
+        Paciente dadosAtualizados = new Paciente(null, "Maria Oliveira", "11122233344", LocalDate.of(1995, 1, 1), "Feminino", "Rua B",
                 List.of());
 
         when(pacienteRepository.findById(1L)).thenReturn(Optional.of(paciente));
@@ -58,7 +59,7 @@ class PacienteServiceTest {
 
         assertEquals("Maria Oliveira", resultado.getNome());
         assertEquals("11122233344", resultado.getCpf());
-        assertEquals(31, resultado.getIdade());
+        assertEquals(LocalDate.of(1995, 1, 1), resultado.getDataNascimento());
         assertEquals("Rua B", resultado.getEndereco());
         assertFalse(resultado.getAtivo());
         verify(pacienteRepository).save(paciente);
@@ -67,8 +68,8 @@ class PacienteServiceTest {
     @Test
     void deveListarPacientes() {
         List<Paciente> pacientes = List.of(
-                new Paciente(1L, "Maria Silva", "12345678900", 30, "Feminino", "Rua A", List.of()),
-                new Paciente(2L, "Joao Souza", "98765432100", 41, "Masculino", "Rua B", List.of()));
+                new Paciente(1L, "Maria Silva", "12345678900", LocalDate.of(1996, 1, 1), "Feminino", "Rua A", List.of()),
+                new Paciente(2L, "Joao Souza", "98765432100", LocalDate.of(1985, 1, 1), "Masculino", "Rua B", List.of()));
 
         when(pacienteRepository.findAll()).thenReturn(pacientes);
 
@@ -81,7 +82,7 @@ class PacienteServiceTest {
 
     @Test
     void deveBuscarPacientePorId() {
-        Paciente paciente = new Paciente(1L, "Maria Silva", "12345678900", 30, "Feminino", "Rua A", List.of());
+        Paciente paciente = new Paciente(1L, "Maria Silva", "12345678900", LocalDate.of(1996, 1, 1), "Feminino", "Rua A", List.of());
 
         when(pacienteRepository.findById(1L)).thenReturn(Optional.of(paciente));
 
@@ -106,7 +107,7 @@ class PacienteServiceTest {
 
     @Test
     void deveInativarPacienteSemRemoverRegistro() {
-        Paciente paciente = new Paciente(1L, "Maria Silva", "12345678900", 30, "Feminino", "Rua A", List.of());
+        Paciente paciente = new Paciente(1L, "Maria Silva", "12345678900", LocalDate.of(1996, 1, 1), "Feminino", "Rua A", List.of());
 
         when(pacienteRepository.findById(1L)).thenReturn(Optional.of(paciente));
         when(pacienteRepository.save(paciente)).thenReturn(paciente);
@@ -119,7 +120,7 @@ class PacienteServiceTest {
 
     @Test
     void deveAtivarPacienteInativo() {
-        Paciente paciente = new Paciente(1L, "Maria Silva", "12345678900", 30, "Feminino", "Rua A", List.of());
+        Paciente paciente = new Paciente(1L, "Maria Silva", "12345678900", LocalDate.of(1996, 1, 1), "Feminino", "Rua A", List.of());
         paciente.setAtivo(false);
 
         when(pacienteRepository.findById(1L)).thenReturn(Optional.of(paciente));
@@ -131,3 +132,4 @@ class PacienteServiceTest {
         verify(pacienteRepository).save(paciente);
     }
 }
+

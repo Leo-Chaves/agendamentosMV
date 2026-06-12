@@ -1,11 +1,15 @@
 package com.projeto.agendamentosMV.dto;
 
+import java.time.LocalDate;
+import java.time.Period;
+
 import com.projeto.agendamentosMV.entity.Paciente;
 
 public record PacienteResponse(
         Long id,
         String nome,
         String cpf,
+        LocalDate dataNascimento,
         Integer idade,
         String sexo,
         String endereco,
@@ -16,9 +20,14 @@ public record PacienteResponse(
                 paciente.getId(),
                 paciente.getNome(),
                 paciente.getCpf(),
-                paciente.getIdade(),
+                paciente.getDataNascimento(),
+                calcularIdade(paciente.getDataNascimento()),
                 paciente.getSexo(),
                 paciente.getEndereco(),
                 paciente.getAtivo());
+    }
+
+    private static Integer calcularIdade(LocalDate dataNascimento) {
+        return dataNascimento == null ? null : Period.between(dataNascimento, LocalDate.now()).getYears();
     }
 }

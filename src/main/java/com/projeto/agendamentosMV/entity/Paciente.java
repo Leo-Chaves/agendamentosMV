@@ -1,5 +1,6 @@
 package com.projeto.agendamentosMV.entity;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,8 +13,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Past;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -35,8 +37,9 @@ public class Paciente {
     @Column(nullable = false, unique = true)
     private String cpf;
 
-    @Min(0)
-    private Integer idade;
+    @NotNull
+    @Past
+    private LocalDate dataNascimento;
 
     @NotBlank
     private String sexo;
@@ -51,12 +54,12 @@ public class Paciente {
     @OneToMany(mappedBy = "paciente", cascade = CascadeType.ALL)
     private List<Agendamento> agendamentos = new ArrayList<>();
 
-    public Paciente(Long id, String nome, String cpf, Integer idade, String sexo, String endereco,
+    public Paciente(Long id, String nome, String cpf, LocalDate dataNascimento, String sexo, String endereco,
             List<Agendamento> agendamentos) {
         this.id = id;
         this.nome = nome;
         this.cpf = cpf;
-        this.idade = idade;
+        this.dataNascimento = dataNascimento;
         this.sexo = sexo;
         this.endereco = endereco;
         this.ativo = true;

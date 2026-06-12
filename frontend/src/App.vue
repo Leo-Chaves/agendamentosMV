@@ -35,7 +35,7 @@ const agendamentos = ref([])
 const pacienteForm = reactive({
   nome: '',
   cpf: '',
-  idade: 30,
+  dataNascimento: '',
   sexo: '',
   endereco: '',
 })
@@ -126,14 +126,9 @@ async function carregarDados() {
 async function salvarPaciente() {
   const editando = Boolean(pacienteEmEdicaoId.value)
   await run(async () => {
-    const payload = {
-      ...pacienteForm,
-      idade: Number(pacienteForm.idade),
-    }
-
     await api(editando ? `/pacientes/${pacienteEmEdicaoId.value}` : '/pacientes', {
       method: editando ? 'PUT' : 'POST',
-      body: JSON.stringify(payload),
+      body: JSON.stringify(pacienteForm),
     })
     fecharModalPaciente()
     await carregarDadosSilencioso()
@@ -162,7 +157,7 @@ function editarPaciente(paciente) {
   Object.assign(pacienteForm, {
     nome: paciente.nome,
     cpf: paciente.cpf,
-    idade: paciente.idade,
+    dataNascimento: paciente.dataNascimento,
     sexo: paciente.sexo,
     endereco: paciente.endereco,
   })
@@ -171,7 +166,7 @@ function editarPaciente(paciente) {
 
 function limparFormularioPaciente() {
   pacienteEmEdicaoId.value = null
-  Object.assign(pacienteForm, { nome: '', cpf: '', idade: 30, sexo: '', endereco: '' })
+  Object.assign(pacienteForm, { nome: '', cpf: '', dataNascimento: '', sexo: '', endereco: '' })
 }
 
 function fecharModalPaciente() {
@@ -674,7 +669,7 @@ onMounted(carregarDados)
         <form class="modal-form" @submit.prevent="salvarPaciente">
           <label><span>Nome</span><input v-model="pacienteForm.nome" required /></label>
           <label><span>CPF</span><input v-model="pacienteForm.cpf" required /></label>
-          <label><span>Idade</span><input v-model.number="pacienteForm.idade" min="0" type="number" required /></label>
+          <label><span>Data de nascimento</span><input v-model="pacienteForm.dataNascimento" type="date" required /></label>
           <label><span>Sexo</span><input v-model="pacienteForm.sexo" required /></label>
           <label><span>Endereço</span><input v-model="pacienteForm.endereco" required /></label>
           <div class="button-row">

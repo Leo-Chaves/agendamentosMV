@@ -95,6 +95,16 @@ O `Profissional` possui `crm`.
 
 Esses campos são obrigatórios e únicos no banco de dados.
 
+## Data de nascimento do paciente
+
+O paciente armazena `dataNascimento` em vez de armazenar `idade` diretamente.
+
+Motivos:
+
+- idade muda com o tempo e poderia ficar inconsistente no banco;
+- data de nascimento é um dado estável do cadastro;
+- a idade pode ser calculada na resposta da API e exibida no frontend quando necessário.
+
 ## Relacionamentos
 
 Um paciente pode ter vários agendamentos.

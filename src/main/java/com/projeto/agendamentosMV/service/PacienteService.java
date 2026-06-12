@@ -23,7 +23,7 @@ public class PacienteService {
         Paciente paciente = buscarPorId(id);
         paciente.setNome(dadosAtualizados.getNome());
         paciente.setCpf(dadosAtualizados.getCpf());
-        paciente.setIdade(dadosAtualizados.getIdade());
+        paciente.setDataNascimento(dadosAtualizados.getDataNascimento());
         paciente.setSexo(dadosAtualizados.getSexo());
         paciente.setEndereco(dadosAtualizados.getEndereco());
         return pacienteRepository.save(paciente);

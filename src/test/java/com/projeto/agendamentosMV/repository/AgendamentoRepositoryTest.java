@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -100,7 +101,7 @@ class AgendamentoRepositoryTest {
     }
 
     private Paciente salvarPaciente(String cpf) {
-        Paciente paciente = new Paciente(null, "Maria Silva", cpf, 30, "Feminino", "Rua A", List.of());
+        Paciente paciente = new Paciente(null, "Maria Silva", cpf, LocalDate.of(1996, 1, 1), "Feminino", "Rua A", List.of());
         entityManager.persist(paciente);
         return paciente;
     }
@@ -125,3 +126,4 @@ class AgendamentoRepositoryTest {
         entityManager.flush();
     }
 }
+

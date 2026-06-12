@@ -10,6 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -142,7 +143,7 @@ class AgendamentoControllerTest {
     }
 
     private Agendamento agendamento(LocalDateTime dataHora, StatusAgendamento status, String motivoCancelamento) {
-        Paciente paciente = new Paciente(1L, "Maria Silva", "12345678900", 30, "Feminino", "Rua A", List.of());
+        Paciente paciente = new Paciente(1L, "Maria Silva", "12345678900", LocalDate.of(1996, 1, 1), "Feminino", "Rua A", List.of());
         Profissional profissional = new Profissional(2L, "Ana Costa", "CRM12345", "Cardiologia", List.of());
 
         Agendamento agendamento = new Agendamento();
@@ -156,3 +157,4 @@ class AgendamentoControllerTest {
         return agendamento;
     }
 }
+
