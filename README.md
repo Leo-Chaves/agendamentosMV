@@ -77,6 +77,8 @@ Ao iniciar a aplicação com o banco vazio, alguns pacientes, profissionais e ag
 
 O H2 é o banco padrão para facilitar a execução local.
 
+- Recomendo testar antes vom H2 
+
 Para demonstrar compatibilidade com Oracle, o projeto possui um profile `oracle` e um `docker-compose.yml` opcional.
 
 Subir Oracle:
