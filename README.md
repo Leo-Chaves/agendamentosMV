@@ -4,12 +4,17 @@ API REST para cadastro de pacientes, profissionais e controle de agendamentos.
 
 O projeto foi desenvolvido com Spring Boot, Spring Data JPA, Bean Validation, H2 em memória e testes automatizados com JUnit, Mockito e MockMvc.
 
+Também há uma interface simples em Vue para consumo da API.
+
 ## Requisitos
 
 - Java 17+
+- Node.js 20+
 - Maven Wrapper incluso no projeto
 
 ## Como executar
+
+Backend:
 
 ```powershell
 .\mvnw.cmd spring-boot:run
@@ -21,10 +26,33 @@ A API fica disponível em:
 http://localhost:8080
 ```
 
+Frontend:
+
+```powershell
+cd frontend
+npm install
+npm run dev
+```
+
+A interface fica disponível em:
+
+```text
+http://127.0.0.1:5173
+```
+
+O Vite usa proxy `/api` para o backend em `http://localhost:8080`.
+
 ## Como rodar os testes
 
 ```powershell
 .\mvnw.cmd test
+```
+
+Build do frontend:
+
+```powershell
+cd frontend
+npm run build
 ```
 
 ## Banco H2
@@ -41,6 +69,39 @@ Dados de conexão:
 JDBC URL: jdbc:h2:mem:agendamentosmv
 User: sa
 Password:
+```
+
+## Oracle com Docker
+
+O H2 é o banco padrão para facilitar a execução local.
+
+Para demonstrar compatibilidade com Oracle, o projeto possui um profile `oracle` e um `docker-compose.yml` opcional.
+
+Subir Oracle:
+
+```powershell
+docker compose up -d oracle
+```
+
+Executar o backend usando Oracle:
+
+```powershell
+$env:SPRING_PROFILES_ACTIVE="oracle"
+.\mvnw.cmd spring-boot:run
+```
+
+Configuração padrão do profile Oracle:
+
+```text
+JDBC URL: jdbc:oracle:thin:@localhost:1521/FREEPDB1
+User: agendamentos
+Password: agendamentos
+```
+
+Parar o container:
+
+```powershell
+docker compose down
 ```
 
 ## Principais endpoints

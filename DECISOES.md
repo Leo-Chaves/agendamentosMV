@@ -11,7 +11,17 @@ Motivos:
 - acelera os testes durante o desenvolvimento;
 - combina bem com Spring Boot e Spring Data JPA.
 
-PostgreSQL com Docker pode ser adicionado posteriormente como melhoria, caso o escopo do teste exija ou se houver tempo.
+## Compatibilidade com Oracle
+
+O H2 permanece como banco padrão para facilitar execução, testes e avaliação local.
+
+Foi adicionada uma configuração opcional para Oracle usando:
+
+- `docker-compose.yml` com Oracle Free;
+- profile Spring `oracle`;
+- driver JDBC `ojdbc11`.
+
+Essa abordagem demonstra compatibilidade com Oracle sem obrigar o avaliador a subir um banco pesado para executar o fluxo principal.
 
 ## Perfil de administrador e autenticação
 
@@ -52,6 +62,19 @@ Os controllers delegam regras de negócio para os services e ficam responsáveis
 - devolver responses com status HTTP adequado.
 
 Erros de regra de negócio lançados como `IllegalArgumentException` são tratados por um `RestControllerAdvice`, retornando `400 Bad Request` com mensagem simples.
+
+## Interface frontend
+
+Foi adicionada uma interface simples em Vue para consumir a API REST.
+
+Motivos:
+
+- atender ao diferencial de interface para consumo da API;
+- facilitar validação manual dos fluxos principais;
+- manter o frontend separado do backend, com proxy de desenvolvimento via Vite;
+- evitar acoplamento entre a aplicação Java e a camada de apresentação.
+
+A interface cobre cadastro, listagem, filtros, cancelamento e inativação.
 
 ## Entidades principais
 
