@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -94,6 +95,20 @@ class ProfissionalServiceTest {
         Profissional resultado = profissionalService.inativar(1L);
 
         assertFalse(resultado.getAtivo());
+        verify(profissionalRepository).save(profissional);
+    }
+
+    @Test
+    void deveAtivarProfissionalInativo() {
+        Profissional profissional = new Profissional(1L, "Ana Costa", "CRM12345", "Cardiologia", List.of());
+        profissional.setAtivo(false);
+
+        when(profissionalRepository.findById(1L)).thenReturn(Optional.of(profissional));
+        when(profissionalRepository.save(profissional)).thenReturn(profissional);
+
+        Profissional resultado = profissionalService.ativar(1L);
+
+        assertTrue(resultado.getAtivo());
         verify(profissionalRepository).save(profissional);
     }
 }

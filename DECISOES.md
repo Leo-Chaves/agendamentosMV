@@ -74,7 +74,7 @@ Motivos:
 - manter o frontend separado do backend, com proxy de desenvolvimento via Vite;
 - evitar acoplamento entre a aplicação Java e a camada de apresentação.
 
-A interface cobre cadastro, listagem, filtros, cancelamento e inativação.
+A interface cobre cadastro, listagem, filtros, cancelamento, inativação e ativação.
 
 ## Entidades principais
 
@@ -172,7 +172,7 @@ As validações de conflito consideram apenas agendamentos com status `AGENDADO`
 
 Agendamentos com status `CANCELADO` ou `REALIZADO` são tratados como histórico e não vão bloquear novos agendamentos no mesmo horário.
 
-## Inativação de pacientes e profissionais
+## Ativação e inativação de pacientes e profissionais
 
 Pacientes e profissionais não são removidos fisicamente pelo sistema.
 
@@ -186,3 +186,5 @@ Motivos:
 - permitir que os dados continuem disponíveis para consulta.
 
 Pacientes ou profissionais inativos não podem receber novos agendamentos.
+
+Também foi adicionado endpoint para ativar novamente pacientes e profissionais inativos, alterando o campo `ativo` para `true`.

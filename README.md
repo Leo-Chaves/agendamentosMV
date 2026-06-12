@@ -142,6 +142,12 @@ Inativar paciente:
 DELETE /pacientes/{id}
 ```
 
+Ativar paciente:
+
+```http
+PATCH /pacientes/{id}/ativar
+```
+
 ### Profissionais
 
 Criar profissional:
@@ -174,6 +180,12 @@ Inativar profissional:
 
 ```http
 DELETE /profissionais/{id}
+```
+
+Ativar profissional:
+
+```http
+PATCH /profissionais/{id}/ativar
 ```
 
 ### Agendamentos
@@ -232,6 +244,7 @@ PATCH /agendamentos/{id}/cancelar
 - Agendamentos cancelados ou realizados são mantidos como histórico.
 - A listagem de agendamentos permite filtro por paciente, profissional ou status.
 - Pacientes e profissionais são inativados logicamente, sem remoção física.
+- Pacientes e profissionais inativos podem ser ativados novamente.
 - Pacientes ou profissionais inativos não podem receber novos agendamentos.
 
 ## Decisões técnicas
@@ -249,6 +262,7 @@ Coberturas principais:
 - cancelamento com motivo;
 - filtros de agendamento;
 - inativação lógica;
+- ativação de pacientes e profissionais inativos;
 - controllers REST;
 - validação de payloads inválidos;
 - respostas de erro da API.

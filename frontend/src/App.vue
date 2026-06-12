@@ -4,6 +4,7 @@ import {
   Ban,
   CalendarCheck,
   CalendarClock,
+  CheckCircle2,
   Filter,
   LoaderCircle,
   Plus,
@@ -190,11 +191,25 @@ async function inativarPaciente(id) {
   }, 'Paciente inativado.')
 }
 
+async function ativarPaciente(id) {
+  await run(async () => {
+    await api(`/pacientes/${id}/ativar`, { method: 'PATCH' })
+    await carregarDadosSilencioso()
+  }, 'Paciente ativado.')
+}
+
 async function inativarProfissional(id) {
   await run(async () => {
     await api(`/profissionais/${id}`, { method: 'DELETE' })
     await carregarDadosSilencioso()
   }, 'Profissional inativado.')
+}
+
+async function ativarProfissional(id) {
+  await run(async () => {
+    await api(`/profissionais/${id}/ativar`, { method: 'PATCH' })
+    await carregarDadosSilencioso()
+  }, 'Profissional ativado.')
 }
 
 async function carregarDadosSilencioso() {
@@ -442,13 +457,22 @@ onMounted(carregarDados)
                   <td><span class="badge" :class="paciente.ativo ? 'ativo' : 'inativo'">{{ paciente.ativo ? 'ATIVO' : 'INATIVO' }}</span></td>
                   <td class="actions">
                     <button
+                      v-if="paciente.ativo"
                       class="icon-button danger-icon"
                       type="button"
                       title="Inativar paciente"
-                      :disabled="!paciente.ativo"
                       @click="inativarPaciente(paciente.id)"
                     >
                       <Ban :size="18" aria-hidden="true" />
+                    </button>
+                    <button
+                      v-else
+                      class="icon-button success-icon"
+                      type="button"
+                      title="Ativar paciente"
+                      @click="ativarPaciente(paciente.id)"
+                    >
+                      <CheckCircle2 :size="18" aria-hidden="true" />
                     </button>
                   </td>
                 </tr>
@@ -494,13 +518,22 @@ onMounted(carregarDados)
                   <td><span class="badge" :class="profissional.ativo ? 'ativo' : 'inativo'">{{ profissional.ativo ? 'ATIVO' : 'INATIVO' }}</span></td>
                   <td class="actions">
                     <button
+                      v-if="profissional.ativo"
                       class="icon-button danger-icon"
                       type="button"
                       title="Inativar profissional"
-                      :disabled="!profissional.ativo"
                       @click="inativarProfissional(profissional.id)"
                     >
                       <Ban :size="18" aria-hidden="true" />
+                    </button>
+                    <button
+                      v-else
+                      class="icon-button success-icon"
+                      type="button"
+                      title="Ativar profissional"
+                      @click="ativarProfissional(profissional.id)"
+                    >
+                      <CheckCircle2 :size="18" aria-hidden="true" />
                     </button>
                   </td>
                 </tr>

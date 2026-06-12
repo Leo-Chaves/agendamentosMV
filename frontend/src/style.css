@@ -323,6 +323,11 @@ textarea:focus {
   background: var(--danger-soft);
 }
 
+.success-icon {
+  color: var(--primary-strong);
+  background: var(--primary-soft);
+}
+
 .table-panel {
   overflow: hidden;
 }

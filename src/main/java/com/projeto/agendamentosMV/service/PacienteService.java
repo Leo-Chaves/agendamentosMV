@@ -33,4 +33,10 @@ public class PacienteService {
         paciente.setAtivo(false);
         return pacienteRepository.save(paciente);
     }
+
+    public Paciente ativar(Long id) {
+        Paciente paciente = buscarPorId(id);
+        paciente.setAtivo(true);
+        return pacienteRepository.save(paciente);
+    }
 }

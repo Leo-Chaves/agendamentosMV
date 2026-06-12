@@ -33,4 +33,10 @@ public class ProfissionalService {
         profissional.setAtivo(false);
         return profissionalRepository.save(profissional);
     }
+
+    public Profissional ativar(Long id) {
+        Profissional profissional = buscarPorId(id);
+        profissional.setAtivo(true);
+        return profissionalRepository.save(profissional);
+    }
 }

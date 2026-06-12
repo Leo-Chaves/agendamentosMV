@@ -6,6 +6,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -123,5 +124,18 @@ class PacienteControllerTest {
                 .andExpect(status().isNoContent());
 
         verify(pacienteService).inativar(1L);
+    }
+
+    @Test
+    void deveAtivarPaciente() throws Exception {
+        Paciente paciente = new Paciente(1L, "Maria Silva", "12345678900", 30, "Feminino", "Rua A", List.of());
+
+        when(pacienteService.ativar(1L)).thenReturn(paciente);
+
+        mockMvc.perform(patch("/pacientes/1/ativar"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.ativo").value(true));
+
+        verify(pacienteService).ativar(1L);
     }
 }
