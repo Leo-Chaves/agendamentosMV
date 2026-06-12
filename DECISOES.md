@@ -100,9 +100,11 @@ O `AgendamentoServiceTest` cobre:
 - impedir agendamento quando o paciente já tiver agendamento ativo no mesmo horário;
 - impedir agendamento quando o profissional já tiver agendamento ativo no mesmo horário;
 - listar agendamentos;
+- listar agendamentos com filtros por paciente, profissional ou status;
 - buscar agendamento por id;
 - lançar erro quando o agendamento não for encontrado;
-- cancelar agendamento.
+- cancelar agendamento registrando motivo;
+- impedir cancelamento sem motivo.
 
 ## Ideia
 
@@ -118,6 +120,11 @@ Regras iniciais:
 - um paciente não pode ter dois agendamentos ativos no mesmo horário;
 - um profissional não pode ter dois agendamentos ativos no mesmo horário;
 - todo novo agendamento começa com status `AGENDADO`;
-- agendamentos cancelados recebem o status `CANCELADO`.
+- agendamentos cancelados recebem o status `CANCELADO`;
+- todo cancelamento deve registrar um motivo;
+- o registro do agendamento deve ser mantido após o cancelamento;
+- a listagem de agendamentos deve permitir filtros opcionais por paciente, profissional ou status.
 
 As validações de conflito consideram apenas agendamentos com status `AGENDADO`.
+
+Agendamentos com status `CANCELADO` ou `REALIZADO` são tratados como histórico e não vão bloquear novos agendamentos no mesmo horário.

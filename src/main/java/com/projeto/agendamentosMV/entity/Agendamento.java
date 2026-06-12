@@ -44,4 +44,6 @@ public class Agendamento {
 
     @Enumerated(EnumType.STRING)
     private StatusAgendamento status = StatusAgendamento.AGENDADO;
+
+    private String motivoCancelamento;
 }

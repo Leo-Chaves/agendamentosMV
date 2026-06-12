@@ -14,6 +14,7 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.data.jpa.domain.Specification;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -138,6 +139,18 @@ class AgendamentoServiceTest {
     }
 
     @Test
+    void deveListarAgendamentosComFiltroPorPacienteProfissionalOuStatus() {
+        List<Agendamento> agendamentos = List.of(new Agendamento());
+
+        when(agendamentoRepository.findAll(any(Specification.class))).thenReturn(agendamentos);
+
+        List<Agendamento> resultado = agendamentoService.listar(1L, 2L, StatusAgendamento.AGENDADO);
+
+        assertSame(agendamentos, resultado);
+        verify(agendamentoRepository).findAll(any(Specification.class));
+    }
+
+    @Test
     void deveBuscarAgendamentoPorId() {
         Agendamento agendamento = new Agendamento();
         agendamento.setId(1L);
@@ -171,9 +184,21 @@ class AgendamentoServiceTest {
         when(agendamentoRepository.findById(1L)).thenReturn(Optional.of(agendamento));
         when(agendamentoRepository.save(agendamento)).thenReturn(agendamento);
 
-        Agendamento resultado = agendamentoService.cancelar(1L);
+        Agendamento resultado = agendamentoService.cancelar(1L, "Paciente solicitou cancelamento.");
 
         assertEquals(StatusAgendamento.CANCELADO, resultado.getStatus());
+        assertEquals("Paciente solicitou cancelamento.", resultado.getMotivoCancelamento());
         verify(agendamentoRepository).save(agendamento);
+    }
+
+    @Test
+    void deveLancarErroQuandoMotivoCancelamentoNaoForInformado() {
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> agendamentoService.cancelar(1L, " "));
+
+        assertEquals("Motivo do cancelamento deve ser informado.", exception.getMessage());
+        verify(agendamentoRepository, never()).findById(1L);
+        verify(agendamentoRepository, never()).save(any(Agendamento.class));
     }
 }
