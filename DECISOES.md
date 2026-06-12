@@ -33,6 +33,26 @@ O projeto segue uma organização simples em camadas:
 - `dto`: representa dados de entrada e saída da API;
 - `exception`: concentra tratamento de erros.
 
+## DTOs e Controllers
+
+A API REST não expõe as entidades JPA diretamente.
+
+Foram criados DTOs de request e response para:
+
+- controlar quais campos entram e saem pela API;
+- evitar acoplamento direto entre contrato HTTP e modelo de persistência;
+- facilitar validações com Bean Validation;
+- reduzir risco de problemas com relacionamentos bidirecionais na serialização JSON.
+
+Os controllers delegam regras de negócio para os services e ficam responsáveis apenas por:
+
+- receber requisições HTTP;
+- validar payloads de entrada;
+- converter DTOs em entidades ou parâmetros de service;
+- devolver responses com status HTTP adequado.
+
+Erros de regra de negócio lançados como `IllegalArgumentException` são tratados por um `RestControllerAdvice`, retornando `400 Bad Request` com mensagem simples.
+
 ## Entidades principais
 
 As entidades iniciais do domínio são:
