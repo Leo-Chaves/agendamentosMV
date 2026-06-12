@@ -1,6 +1,7 @@
 package com.projeto.agendamentosMV.controller;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -80,5 +81,33 @@ class PacienteControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.nome").value("Maria Silva"));
+    }
+
+    @Test
+    void deveRetornarBadRequestQuandoPacienteNaoForEncontrado() throws Exception {
+        when(pacienteService.buscarPorId(99L)).thenThrow(new IllegalArgumentException("Paciente não encontrado."));
+
+        mockMvc.perform(get("/pacientes/99"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.mensagem").value("Paciente não encontrado."));
+    }
+
+    @Test
+    void deveRetornarBadRequestQuandoPayloadForInvalido() throws Exception {
+        mockMvc.perform(post("/pacientes")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                        {
+                          "nome": "",
+                          "cpf": "",
+                          "idade": -1,
+                          "sexo": "",
+                          "endereco": ""
+                        }
+                        """))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.mensagem").value("Dados inválidos."));
+
+        verify(pacienteService, never()).salvar(any(Paciente.class));
     }
 }

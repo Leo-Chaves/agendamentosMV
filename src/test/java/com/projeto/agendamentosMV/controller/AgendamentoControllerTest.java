@@ -1,5 +1,6 @@
 package com.projeto.agendamentosMV.controller;
 
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -106,6 +107,38 @@ class AgendamentoControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("CANCELADO"))
                 .andExpect(jsonPath("$.motivoCancelamento").value("Paciente solicitou."));
+    }
+
+    @Test
+    void deveRetornarBadRequestQuandoCriacaoTiverPayloadInvalido() throws Exception {
+        mockMvc.perform(post("/agendamentos")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                        {
+                          "pacienteId": null,
+                          "profissionalId": null,
+                          "dataHora": null
+                        }
+                        """))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.mensagem").value("Dados inválidos."));
+
+        verify(agendamentoService, never()).agendar(null, null, null);
+    }
+
+    @Test
+    void deveRetornarBadRequestQuandoCancelamentoNaoTiverMotivo() throws Exception {
+        mockMvc.perform(patch("/agendamentos/10/cancelar")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                        {
+                          "motivo": ""
+                        }
+                        """))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.mensagem").value("Dados inválidos."));
+
+        verify(agendamentoService, never()).cancelar(10L, "");
     }
 
     private Agendamento agendamento(LocalDateTime dataHora, StatusAgendamento status, String motivoCancelamento) {

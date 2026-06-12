@@ -1,6 +1,7 @@
 package com.projeto.agendamentosMV.controller;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -78,5 +79,31 @@ class ProfissionalControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.nome").value("Ana Costa"));
+    }
+
+    @Test
+    void deveRetornarBadRequestQuandoProfissionalNaoForEncontrado() throws Exception {
+        when(profissionalService.buscarPorId(99L)).thenThrow(new IllegalArgumentException("Profissional não encontrado."));
+
+        mockMvc.perform(get("/profissionais/99"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.mensagem").value("Profissional não encontrado."));
+    }
+
+    @Test
+    void deveRetornarBadRequestQuandoPayloadForInvalido() throws Exception {
+        mockMvc.perform(post("/profissionais")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                        {
+                          "nome": "",
+                          "crm": "",
+                          "area": ""
+                        }
+                        """))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.mensagem").value("Dados inválidos."));
+
+        verify(profissionalService, never()).salvar(any(Profissional.class));
     }
 }
