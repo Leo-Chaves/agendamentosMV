@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -48,6 +49,11 @@ public class PacienteController {
     @GetMapping("/{id}")
     public PacienteResponse buscarPorId(@PathVariable Long id) {
         return PacienteResponse.from(pacienteService.buscarPorId(id));
+    }
+
+    @PutMapping("/{id}")
+    public PacienteResponse atualizar(@PathVariable Long id, @Valid @RequestBody PacienteRequest request) {
+        return PacienteResponse.from(pacienteService.atualizar(id, request.toEntity()));
     }
 
     @DeleteMapping("/{id}")

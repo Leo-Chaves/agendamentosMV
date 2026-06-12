@@ -19,6 +19,16 @@ public class PacienteService {
         return pacienteRepository.save(paciente);
     }
 
+    public Paciente atualizar(Long id, Paciente dadosAtualizados) {
+        Paciente paciente = buscarPorId(id);
+        paciente.setNome(dadosAtualizados.getNome());
+        paciente.setCpf(dadosAtualizados.getCpf());
+        paciente.setIdade(dadosAtualizados.getIdade());
+        paciente.setSexo(dadosAtualizados.getSexo());
+        paciente.setEndereco(dadosAtualizados.getEndereco());
+        return pacienteRepository.save(paciente);
+    }
+
     public List<Paciente> listar() {
         return pacienteRepository.findAll();
     }

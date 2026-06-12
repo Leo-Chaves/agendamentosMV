@@ -136,6 +136,12 @@ Buscar paciente:
 GET /pacientes/{id}
 ```
 
+Atualizar paciente:
+
+```http
+PUT /pacientes/{id}
+```
+
 Inativar paciente:
 
 ```http
@@ -174,6 +180,12 @@ Buscar profissional:
 
 ```http
 GET /profissionais/{id}
+```
+
+Atualizar profissional:
+
+```http
+PUT /profissionais/{id}
 ```
 
 Inativar profissional:
@@ -245,6 +257,7 @@ PATCH /agendamentos/{id}/cancelar
 - A listagem de agendamentos permite filtro por paciente, profissional ou status.
 - Pacientes e profissionais são inativados logicamente, sem remoção física.
 - Pacientes e profissionais inativos podem ser ativados novamente.
+- Os dados cadastrais de pacientes e profissionais podem ser atualizados sem alterar o histórico.
 - Pacientes ou profissionais inativos não podem receber novos agendamentos.
 
 ## Decisões técnicas
@@ -258,6 +271,7 @@ O projeto segue uma abordagem orientada a testes nas regras de negócio e nos co
 Coberturas principais:
 
 - services de paciente, profissional e agendamento;
+- atualização de pacientes e profissionais;
 - regras de conflito de horário;
 - cancelamento com motivo;
 - filtros de agendamento;

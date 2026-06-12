@@ -46,6 +46,24 @@ class ProfissionalServiceTest {
     }
 
     @Test
+    void deveAtualizarProfissionalMantendoStatusAtual() {
+        Profissional profissional = new Profissional(1L, "Ana Costa", "CRM12345", "Cardiologia", List.of());
+        profissional.setAtivo(false);
+        Profissional dadosAtualizados = new Profissional(null, "Ana Lima", "CRM54321", "Pediatria", List.of());
+
+        when(profissionalRepository.findById(1L)).thenReturn(Optional.of(profissional));
+        when(profissionalRepository.save(profissional)).thenReturn(profissional);
+
+        Profissional resultado = profissionalService.atualizar(1L, dadosAtualizados);
+
+        assertEquals("Ana Lima", resultado.getNome());
+        assertEquals("CRM54321", resultado.getCrm());
+        assertEquals("Pediatria", resultado.getArea());
+        assertFalse(resultado.getAtivo());
+        verify(profissionalRepository).save(profissional);
+    }
+
+    @Test
     void deveListarProfissionais() {
         List<Profissional> profissionais = List.of(
                 new Profissional(1L, "Ana Costa", "CRM12345", "Cardiologia", List.of()),

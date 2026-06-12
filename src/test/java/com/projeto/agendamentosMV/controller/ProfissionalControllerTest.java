@@ -1,6 +1,7 @@
 package com.projeto.agendamentosMV.controller;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -8,6 +9,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -81,6 +83,30 @@ class ProfissionalControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.nome").value("Ana Costa"));
+    }
+
+    @Test
+    void deveAtualizarProfissional() throws Exception {
+        Profissional profissionalAtualizado = new Profissional(1L, "Ana Lima", "CRM54321", "Pediatria", List.of());
+
+        when(profissionalService.atualizar(eq(1L), any(Profissional.class))).thenReturn(profissionalAtualizado);
+
+        mockMvc.perform(put("/profissionais/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                        {
+                          "nome": "Ana Lima",
+                          "crm": "CRM54321",
+                          "area": "Pediatria"
+                        }
+                        """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.nome").value("Ana Lima"))
+                .andExpect(jsonPath("$.crm").value("CRM54321"))
+                .andExpect(jsonPath("$.area").value("Pediatria"));
+
+        verify(profissionalService).atualizar(eq(1L), any(Profissional.class));
     }
 
     @Test

@@ -311,6 +311,10 @@ textarea:focus {
   gap: 8px;
 }
 
+.button-row .primary-button {
+  flex: 1;
+}
+
 .icon-button {
   width: 40px;
   height: 40px;
@@ -387,8 +391,14 @@ tbody tr:last-child td {
 }
 
 .actions {
-  width: 56px;
+  width: 104px;
   text-align: right;
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
 }
 
 .badge {

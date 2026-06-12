@@ -7,8 +7,10 @@ import {
   CheckCircle2,
   Filter,
   LoaderCircle,
+  Pencil,
   Plus,
   RefreshCw,
+  Save,
   Search,
   Stethoscope,
   UserRound,
@@ -43,6 +45,9 @@ const profissionalForm = reactive({
   crm: '',
   area: '',
 })
+
+const pacienteEmEdicaoId = ref(null)
+const profissionalEmEdicaoId = ref(null)
 
 const agendamentoForm = reactive({
   pacienteId: '',
@@ -115,28 +120,62 @@ async function carregarDados() {
 }
 
 async function salvarPaciente() {
+  const editando = Boolean(pacienteEmEdicaoId.value)
   await run(async () => {
-    await api('/pacientes', {
-      method: 'POST',
-      body: JSON.stringify({
-        ...pacienteForm,
-        idade: Number(pacienteForm.idade),
-      }),
+    const payload = {
+      ...pacienteForm,
+      idade: Number(pacienteForm.idade),
+    }
+
+    await api(editando ? `/pacientes/${pacienteEmEdicaoId.value}` : '/pacientes', {
+      method: editando ? 'PUT' : 'POST',
+      body: JSON.stringify(payload),
     })
-    Object.assign(pacienteForm, { nome: '', cpf: '', idade: 30, sexo: '', endereco: '' })
+    limparFormularioPaciente()
     await carregarDadosSilencioso()
-  }, 'Paciente cadastrado.')
+  }, editando ? 'Paciente atualizado.' : 'Paciente cadastrado.')
 }
 
 async function salvarProfissional() {
+  const editando = Boolean(profissionalEmEdicaoId.value)
   await run(async () => {
-    await api('/profissionais', {
-      method: 'POST',
+    await api(editando ? `/profissionais/${profissionalEmEdicaoId.value}` : '/profissionais', {
+      method: editando ? 'PUT' : 'POST',
       body: JSON.stringify(profissionalForm),
     })
-    Object.assign(profissionalForm, { nome: '', crm: '', area: '' })
+    limparFormularioProfissional()
     await carregarDadosSilencioso()
-  }, 'Profissional cadastrado.')
+  }, editando ? 'Profissional atualizado.' : 'Profissional cadastrado.')
+}
+
+function editarPaciente(paciente) {
+  pacienteEmEdicaoId.value = paciente.id
+  Object.assign(pacienteForm, {
+    nome: paciente.nome,
+    cpf: paciente.cpf,
+    idade: paciente.idade,
+    sexo: paciente.sexo,
+    endereco: paciente.endereco,
+  })
+}
+
+function limparFormularioPaciente() {
+  pacienteEmEdicaoId.value = null
+  Object.assign(pacienteForm, { nome: '', cpf: '', idade: 30, sexo: '', endereco: '' })
+}
+
+function editarProfissional(profissional) {
+  profissionalEmEdicaoId.value = profissional.id
+  Object.assign(profissionalForm, {
+    nome: profissional.nome,
+    crm: profissional.crm,
+    area: profissional.area,
+  })
+}
+
+function limparFormularioProfissional() {
+  profissionalEmEdicaoId.value = null
+  Object.assign(profissionalForm, { nome: '', crm: '', area: '' })
 }
 
 async function salvarAgendamento() {
@@ -421,16 +460,28 @@ onMounted(carregarDados)
 
       <section v-if="activeTab === 'pacientes'" class="content-grid">
         <form class="panel form-panel" @submit.prevent="salvarPaciente">
-          <h2>Novo paciente</h2>
+          <h2>{{ pacienteEmEdicaoId ? 'Editar paciente' : 'Novo paciente' }}</h2>
           <label><span>Nome</span><input v-model="pacienteForm.nome" required /></label>
           <label><span>CPF</span><input v-model="pacienteForm.cpf" required /></label>
           <label><span>Idade</span><input v-model.number="pacienteForm.idade" min="0" type="number" required /></label>
           <label><span>Sexo</span><input v-model="pacienteForm.sexo" required /></label>
           <label><span>Endereço</span><input v-model="pacienteForm.endereco" required /></label>
-          <button class="primary-button" type="submit" :disabled="loading">
-            <Plus :size="18" aria-hidden="true" />
-            <span>Cadastrar</span>
-          </button>
+          <div class="button-row">
+            <button class="primary-button" type="submit" :disabled="loading">
+              <Save v-if="pacienteEmEdicaoId" :size="18" aria-hidden="true" />
+              <Plus v-else :size="18" aria-hidden="true" />
+              <span>{{ pacienteEmEdicaoId ? 'Salvar' : 'Cadastrar' }}</span>
+            </button>
+            <button
+              v-if="pacienteEmEdicaoId"
+              class="icon-button"
+              type="button"
+              title="Cancelar edição"
+              @click="limparFormularioPaciente"
+            >
+              <XCircle :size="18" aria-hidden="true" />
+            </button>
+          </div>
         </form>
 
         <section class="panel table-panel wide">
@@ -456,24 +507,34 @@ onMounted(carregarDados)
                   <td>{{ paciente.idade }}</td>
                   <td><span class="badge" :class="paciente.ativo ? 'ativo' : 'inativo'">{{ paciente.ativo ? 'ATIVO' : 'INATIVO' }}</span></td>
                   <td class="actions">
-                    <button
-                      v-if="paciente.ativo"
-                      class="icon-button danger-icon"
-                      type="button"
-                      title="Inativar paciente"
-                      @click="inativarPaciente(paciente.id)"
-                    >
-                      <Ban :size="18" aria-hidden="true" />
-                    </button>
-                    <button
-                      v-else
-                      class="icon-button success-icon"
-                      type="button"
-                      title="Ativar paciente"
-                      @click="ativarPaciente(paciente.id)"
-                    >
-                      <CheckCircle2 :size="18" aria-hidden="true" />
-                    </button>
+                    <div class="action-buttons">
+                      <button
+                        class="icon-button"
+                        type="button"
+                        title="Editar paciente"
+                        @click="editarPaciente(paciente)"
+                      >
+                        <Pencil :size="18" aria-hidden="true" />
+                      </button>
+                      <button
+                        v-if="paciente.ativo"
+                        class="icon-button danger-icon"
+                        type="button"
+                        title="Inativar paciente"
+                        @click="inativarPaciente(paciente.id)"
+                      >
+                        <Ban :size="18" aria-hidden="true" />
+                      </button>
+                      <button
+                        v-else
+                        class="icon-button success-icon"
+                        type="button"
+                        title="Ativar paciente"
+                        @click="ativarPaciente(paciente.id)"
+                      >
+                        <CheckCircle2 :size="18" aria-hidden="true" />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               </tbody>
@@ -484,14 +545,26 @@ onMounted(carregarDados)
 
       <section v-if="activeTab === 'profissionais'" class="content-grid">
         <form class="panel form-panel" @submit.prevent="salvarProfissional">
-          <h2>Novo profissional</h2>
+          <h2>{{ profissionalEmEdicaoId ? 'Editar profissional' : 'Novo profissional' }}</h2>
           <label><span>Nome</span><input v-model="profissionalForm.nome" required /></label>
           <label><span>CRM</span><input v-model="profissionalForm.crm" required /></label>
           <label><span>Área</span><input v-model="profissionalForm.area" required /></label>
-          <button class="primary-button" type="submit" :disabled="loading">
-            <Plus :size="18" aria-hidden="true" />
-            <span>Cadastrar</span>
-          </button>
+          <div class="button-row">
+            <button class="primary-button" type="submit" :disabled="loading">
+              <Save v-if="profissionalEmEdicaoId" :size="18" aria-hidden="true" />
+              <Plus v-else :size="18" aria-hidden="true" />
+              <span>{{ profissionalEmEdicaoId ? 'Salvar' : 'Cadastrar' }}</span>
+            </button>
+            <button
+              v-if="profissionalEmEdicaoId"
+              class="icon-button"
+              type="button"
+              title="Cancelar edição"
+              @click="limparFormularioProfissional"
+            >
+              <XCircle :size="18" aria-hidden="true" />
+            </button>
+          </div>
         </form>
 
         <section class="panel table-panel wide">
@@ -517,24 +590,34 @@ onMounted(carregarDados)
                   <td>{{ profissional.area }}</td>
                   <td><span class="badge" :class="profissional.ativo ? 'ativo' : 'inativo'">{{ profissional.ativo ? 'ATIVO' : 'INATIVO' }}</span></td>
                   <td class="actions">
-                    <button
-                      v-if="profissional.ativo"
-                      class="icon-button danger-icon"
-                      type="button"
-                      title="Inativar profissional"
-                      @click="inativarProfissional(profissional.id)"
-                    >
-                      <Ban :size="18" aria-hidden="true" />
-                    </button>
-                    <button
-                      v-else
-                      class="icon-button success-icon"
-                      type="button"
-                      title="Ativar profissional"
-                      @click="ativarProfissional(profissional.id)"
-                    >
-                      <CheckCircle2 :size="18" aria-hidden="true" />
-                    </button>
+                    <div class="action-buttons">
+                      <button
+                        class="icon-button"
+                        type="button"
+                        title="Editar profissional"
+                        @click="editarProfissional(profissional)"
+                      >
+                        <Pencil :size="18" aria-hidden="true" />
+                      </button>
+                      <button
+                        v-if="profissional.ativo"
+                        class="icon-button danger-icon"
+                        type="button"
+                        title="Inativar profissional"
+                        @click="inativarProfissional(profissional.id)"
+                      >
+                        <Ban :size="18" aria-hidden="true" />
+                      </button>
+                      <button
+                        v-else
+                        class="icon-button success-icon"
+                        type="button"
+                        title="Ativar profissional"
+                        @click="ativarProfissional(profissional.id)"
+                      >
+                        <CheckCircle2 :size="18" aria-hidden="true" />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               </tbody>

@@ -74,7 +74,7 @@ Motivos:
 - manter o frontend separado do backend, com proxy de desenvolvimento via Vite;
 - evitar acoplamento entre a aplicação Java e a camada de apresentação.
 
-A interface cobre cadastro, listagem, filtros, cancelamento, inativação e ativação.
+A interface cobre cadastro, edição, listagem, filtros, cancelamento, inativação e ativação.
 
 ## Entidades principais
 
@@ -188,3 +188,15 @@ Motivos:
 Pacientes ou profissionais inativos não podem receber novos agendamentos.
 
 Também foi adicionado endpoint para ativar novamente pacientes e profissionais inativos, alterando o campo `ativo` para `true`.
+
+## Edição de pacientes e profissionais
+
+Pacientes e profissionais podem ter seus dados cadastrais atualizados por endpoints `PUT`.
+
+A edição altera apenas os dados principais do cadastro e preserva o status atual do registro.
+
+Motivos:
+
+- corrigir dados digitados incorretamente;
+- manter o histórico de agendamentos ligado ao mesmo registro;
+- evitar exclusão e recriação de cadastros para ajustes simples.

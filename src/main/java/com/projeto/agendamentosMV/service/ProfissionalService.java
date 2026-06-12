@@ -19,6 +19,14 @@ public class ProfissionalService {
         return profissionalRepository.save(profissional);
     }
 
+    public Profissional atualizar(Long id, Profissional dadosAtualizados) {
+        Profissional profissional = buscarPorId(id);
+        profissional.setNome(dadosAtualizados.getNome());
+        profissional.setCrm(dadosAtualizados.getCrm());
+        profissional.setArea(dadosAtualizados.getArea());
+        return profissionalRepository.save(profissional);
+    }
+
     public List<Profissional> listar() {
         return profissionalRepository.findAll();
     }

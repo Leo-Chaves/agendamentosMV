@@ -45,6 +45,26 @@ class PacienteServiceTest {
     }
 
     @Test
+    void deveAtualizarPacienteMantendoStatusAtual() {
+        Paciente paciente = new Paciente(1L, "Maria Silva", "12345678900", 30, "Feminino", "Rua A", List.of());
+        paciente.setAtivo(false);
+        Paciente dadosAtualizados = new Paciente(null, "Maria Oliveira", "11122233344", 31, "Feminino", "Rua B",
+                List.of());
+
+        when(pacienteRepository.findById(1L)).thenReturn(Optional.of(paciente));
+        when(pacienteRepository.save(paciente)).thenReturn(paciente);
+
+        Paciente resultado = pacienteService.atualizar(1L, dadosAtualizados);
+
+        assertEquals("Maria Oliveira", resultado.getNome());
+        assertEquals("11122233344", resultado.getCpf());
+        assertEquals(31, resultado.getIdade());
+        assertEquals("Rua B", resultado.getEndereco());
+        assertFalse(resultado.getAtivo());
+        verify(pacienteRepository).save(paciente);
+    }
+
+    @Test
     void deveListarPacientes() {
         List<Paciente> pacientes = List.of(
                 new Paciente(1L, "Maria Silva", "12345678900", 30, "Feminino", "Rua A", List.of()),
