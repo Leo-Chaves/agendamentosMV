@@ -82,6 +82,7 @@ const filtros = reactive({
   status: '',
   texto: '',
   areaProfissional: '',
+  periodo: '',
 })
 
 const filtrosPacientes = reactive({
@@ -169,8 +170,9 @@ const agendamentosFiltrados = computed(() => {
       ].some((valor) => normalizar(valor).includes(texto))
 
     const correspondeAArea = !filtros.areaProfissional || areaProfissional === filtros.areaProfissional
+    const correspondeAoPeriodo = filtrarPorPeriodo(agendamento.dataHora, filtros.periodo)
 
-    return correspondeAoTexto && correspondeAArea
+    return correspondeAoTexto && correspondeAArea && correspondeAoPeriodo
   })
 })
 
@@ -340,7 +342,14 @@ async function filtrarAgendamentos() {
 }
 
 async function limparFiltros() {
-  Object.assign(filtros, { pacienteId: '', profissionalId: '', status: '', texto: '', areaProfissional: '' })
+  Object.assign(filtros, {
+    pacienteId: '',
+    profissionalId: '',
+    status: '',
+    texto: '',
+    areaProfissional: '',
+    periodo: '',
+  })
   await run(buscarAgendamentos, 'Filtros limpos.')
 }
 
@@ -448,6 +457,36 @@ function profissionalPorId(id) {
   return profissionais.value.find((profissional) => profissional.id === id)
 }
 
+function filtrarPorPeriodo(dataHora, periodo) {
+  if (!periodo) return true
+
+  const dataAgendamento = new Date(dataHora)
+  const hoje = new Date()
+
+  if (periodo === 'HOJE') {
+    return mesmaData(dataAgendamento, hoje)
+  }
+
+  if (periodo === 'PROXIMOS_7_DIAS') {
+    const inicio = inicioDoDia(hoje)
+    const fim = inicioDoDia(hoje)
+    fim.setDate(fim.getDate() + 7)
+    return dataAgendamento >= inicio && dataAgendamento < fim
+  }
+
+  return true
+}
+
+function mesmaData(primeiraData, segundaData) {
+  return primeiraData.getFullYear() === segundaData.getFullYear()
+    && primeiraData.getMonth() === segundaData.getMonth()
+    && primeiraData.getDate() === segundaData.getDate()
+}
+
+function inicioDoDia(data) {
+  return new Date(data.getFullYear(), data.getMonth(), data.getDate())
+}
+
 onMounted(carregarDados)
 </script>
 
@@ -541,6 +580,14 @@ onMounted(carregarDados)
               <option value="AGENDADO">AGENDADO</option>
               <option value="CANCELADO">CANCELADO</option>
               <option value="REALIZADO">REALIZADO</option>
+            </select>
+          </label>
+          <label>
+            <span>Período</span>
+            <select v-model="filtros.periodo">
+              <option value="">Todos</option>
+              <option value="HOJE">Hoje</option>
+              <option value="PROXIMOS_7_DIAS">Próximos 7 dias</option>
             </select>
           </label>
           <label>

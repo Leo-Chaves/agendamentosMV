@@ -240,7 +240,7 @@ h2 {
 
 .appointment-filter-panel {
   display: grid;
-  grid-template-columns: minmax(220px, 1.3fr) repeat(4, minmax(140px, 1fr)) auto;
+  grid-template-columns: minmax(220px, 1.4fr) repeat(5, minmax(130px, 1fr)) auto;
   gap: 10px;
   align-items: end;
   padding: 14px;
