@@ -17,6 +17,7 @@ import com.projeto.agendamentosMV.entity.Paciente;
 import com.projeto.agendamentosMV.entity.Profissional;
 import com.projeto.agendamentosMV.entity.Sexo;
 import com.projeto.agendamentosMV.entity.StatusAgendamento;
+import com.projeto.agendamentosMV.entity.TipoAtendimento;
 
 import jakarta.persistence.EntityManager;
 
@@ -123,6 +124,7 @@ class AgendamentoRepositoryTest {
         agendamento.setPaciente(paciente);
         agendamento.setProfissional(profissional);
         agendamento.setDataHora(dataHora);
+        agendamento.setTipoAtendimento(TipoAtendimento.CONSULTA);
         agendamento.setStatus(status);
         entityManager.persist(agendamento);
         entityManager.flush();

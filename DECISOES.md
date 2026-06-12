@@ -97,12 +97,12 @@ A busca considera textos relacionados ao registro, sem exigir que o usuário esc
 
 Filtros disponíveis:
 
-- agendamentos: busca por paciente, profissional, status, data, motivo ou área profissional;
+- agendamentos: busca por paciente, profissional, tipo de atendimento, status, data, motivo ou área profissional;
 - pacientes: busca por nome, CPF, sexo ou status;
 - profissionais: busca por nome, CRM, área ou status;
 - profissionais e agendamentos também possuem filtro por área profissional.
 
-O filtro por tipo de atendimento não foi implementado porque esse campo ainda não existe no modelo do sistema. Caso o domínio passe a armazenar esse dado, ele pode ser incluído na mesma estratégia de busca.
+O tipo de atendimento também é considerado na busca de agendamentos.
 
 ## Entidades principais
 
@@ -132,9 +132,9 @@ Motivos:
 - data de nascimento é um dado estável do cadastro;
 - a idade pode ser calculada na resposta da API e exibida no frontend quando necessário.
 
-## Enums para sexo e área profissional
+## Enums para sexo, área profissional e tipo de atendimento
 
-Os campos `sexo` e `area` foram modelados como enums.
+Os campos `sexo`, `area` e `tipoAtendimento` foram modelados como enums.
 
 Valores de `Sexo`:
 
@@ -150,13 +150,26 @@ Valores de `AreaProfissional`:
 - `ORTOPEDIA`;
 - `PSICOLOGIA`;
 - `PEDIATRIA`;
-- `FISIOTERAPIA`.
+- `FISIOTERAPIA`;
+- `BIOMEDICINA`;
+- `ENFERMAGEM`.
+
+Valores de `TipoAtendimento`:
+
+- `CONSULTA`;
+- `RETORNO`;
+- `EXAME`;
+- `AVALIACAO`.
 
 Motivos:
 
 - evitar variações de digitação;
 - padronizar os dados gravados no banco;
 - facilitar validação no backend e seleção por lista no frontend.
+
+Exames só podem ser agendados com profissionais das áreas `BIOMEDICINA` ou `ENFERMAGEM`.
+
+Consulta, retorno e avaliação devem ser agendados com as demais áreas profissionais.
 
 ## Relacionamentos
 
@@ -219,7 +232,10 @@ O `AgendamentoServiceTest` cobre:
 - cancelar agendamento registrando motivo;
 - impedir cancelamento sem motivo;
 - marcar agendamento como realizado;
-- impedir marcar como realizado um agendamento que não esteja `AGENDADO`.
+- impedir marcar como realizado um agendamento que não esteja `AGENDADO`;
+- permitir exame apenas com profissional de biomedicina ou enfermagem;
+- impedir exame com profissional de outra área;
+- impedir consulta com profissional de biomedicina ou enfermagem.
 
 ## Ideia
 
@@ -227,11 +243,14 @@ Percebi que seria interessante algumas partes do sistema terem identificadores �
 
 ## Regras de agendamento
 
-O agendamento deve ser criado a partir de um paciente existente, um profissional existente e uma data/hora.
+O agendamento deve ser criado a partir de um paciente existente, um profissional existente, uma data/hora e um tipo de atendimento.
 
 Regras iniciais:
 
 - não é permitido criar agendamento para data/hora passada;
+- todo agendamento deve informar um tipo de atendimento;
+- exames só podem ser feitos por profissionais de biomedicina ou enfermagem;
+- consulta, retorno e avaliação devem ser feitos pelas demais áreas profissionais;
 - um paciente não pode ter dois agendamentos ativos no mesmo horário;
 - um profissional não pode ter dois agendamentos ativos no mesmo horário;
 - cada agendamento possui duração padrão de 30 minutos;
@@ -296,4 +315,13 @@ Motivos:
 
 ## Não irei colocar validador de CPF para avaliadores testaerem de forma mais pratica 
 
+## Tipo de atendimento
 
+O enunciado informa que cada agendamento deve possuir tipo de atendimento.
+
+Por isso, foi criado o enum `TipoAtendimento` e o campo passou a fazer parte do request, response, entidade, dados iniciais e frontend.
+
+Também foi adicionada uma regra simples de compatibilidade:
+
+- `EXAME` deve ser agendado com profissional de `BIOMEDICINA` ou `ENFERMAGEM`;
+- `CONSULTA`, `RETORNO` e `AVALIACAO` devem ser agendados com as demais áreas profissionais.

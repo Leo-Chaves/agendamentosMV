@@ -35,7 +35,8 @@ public class AgendamentoController {
         Agendamento agendamento = agendamentoService.agendar(
                 request.pacienteId(),
                 request.profissionalId(),
-                request.dataHora());
+                request.dataHora(),
+                request.tipoAtendimento());
 
         return ResponseEntity
                 .created(URI.create("/agendamentos/" + agendamento.getId()))

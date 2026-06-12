@@ -33,6 +33,10 @@ public class Agendamento {
     private LocalDateTime dataHora;
 
     @NotNull
+    @Enumerated(EnumType.STRING)
+    private TipoAtendimento tipoAtendimento;
+
+    @NotNull
     @ManyToOne
     @JoinColumn(name = "paciente_id")
     private Paciente paciente;

@@ -26,6 +26,7 @@ import com.projeto.agendamentosMV.entity.Paciente;
 import com.projeto.agendamentosMV.entity.Profissional;
 import com.projeto.agendamentosMV.entity.Sexo;
 import com.projeto.agendamentosMV.entity.StatusAgendamento;
+import com.projeto.agendamentosMV.entity.TipoAtendimento;
 import com.projeto.agendamentosMV.service.AgendamentoService;
 
 @WebMvcTest(AgendamentoController.class)
@@ -42,7 +43,7 @@ class AgendamentoControllerTest {
         LocalDateTime dataHora = LocalDateTime.of(2026, 7, 10, 14, 0);
         Agendamento agendamento = agendamento(dataHora, StatusAgendamento.AGENDADO, null);
 
-        when(agendamentoService.agendar(1L, 2L, dataHora)).thenReturn(agendamento);
+        when(agendamentoService.agendar(1L, 2L, dataHora, TipoAtendimento.CONSULTA)).thenReturn(agendamento);
 
         mockMvc.perform(post("/agendamentos")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -50,13 +51,15 @@ class AgendamentoControllerTest {
                         {
                           "pacienteId": 1,
                           "profissionalId": 2,
-                          "dataHora": "2026-07-10T14:00:00"
+                          "dataHora": "2026-07-10T14:00:00",
+                          "tipoAtendimento": "CONSULTA"
                         }
                         """))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(10))
                 .andExpect(jsonPath("$.pacienteId").value(1))
                 .andExpect(jsonPath("$.profissionalId").value(2))
+                .andExpect(jsonPath("$.tipoAtendimento").value("CONSULTA"))
                 .andExpect(jsonPath("$.status").value("AGENDADO"));
     }
 
@@ -134,13 +137,14 @@ class AgendamentoControllerTest {
                         {
                           "pacienteId": null,
                           "profissionalId": null,
-                          "dataHora": null
+                          "dataHora": null,
+                          "tipoAtendimento": null
                         }
                         """))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.mensagem").value("Dados inválidos."));
 
-        verify(agendamentoService, never()).agendar(null, null, null);
+        verify(agendamentoService, never()).agendar(null, null, null, null);
     }
 
     @Test
@@ -167,6 +171,7 @@ class AgendamentoControllerTest {
         agendamento.setPaciente(paciente);
         agendamento.setProfissional(profissional);
         agendamento.setDataHora(dataHora);
+        agendamento.setTipoAtendimento(TipoAtendimento.CONSULTA);
         agendamento.setStatus(status);
         agendamento.setMotivoCancelamento(motivoCancelamento);
 

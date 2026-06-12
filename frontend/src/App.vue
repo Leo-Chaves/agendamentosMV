@@ -37,6 +37,15 @@ const areasProfissionais = [
   { value: 'PSICOLOGIA', label: 'Psicologia' },
   { value: 'PEDIATRIA', label: 'Pediatria' },
   { value: 'FISIOTERAPIA', label: 'Fisioterapia' },
+  { value: 'BIOMEDICINA', label: 'Biomedicina' },
+  { value: 'ENFERMAGEM', label: 'Enfermagem' },
+]
+
+const tiposAtendimento = [
+  { value: 'CONSULTA', label: 'Consulta' },
+  { value: 'RETORNO', label: 'Retorno' },
+  { value: 'EXAME', label: 'Exame' },
+  { value: 'AVALIACAO', label: 'Avaliação' },
 ]
 
 const activeTab = ref('agendamentos')
@@ -71,6 +80,7 @@ const agendamentoForm = reactive({
   pacienteId: '',
   profissionalId: '',
   dataHora: '',
+  tipoAtendimento: '',
 })
 
 const agendamentoModalAberto = ref(false)
@@ -103,6 +113,13 @@ const cancelamento = reactive({
 
 const pacientesAtivos = computed(() => pacientes.value.filter((paciente) => paciente.ativo))
 const profissionaisAtivos = computed(() => profissionais.value.filter((profissional) => profissional.ativo))
+const profissionaisDisponiveisParaAgendamento = computed(() => {
+  if (agendamentoForm.tipoAtendimento === 'EXAME') {
+    return profissionaisAtivos.value.filter(profissionalRealizaExames)
+  }
+
+  return profissionaisAtivos.value.filter((profissional) => !profissionalRealizaExames(profissional))
+})
 
 const pacientesFiltrados = computed(() => {
   const texto = normalizar(filtrosPacientes.texto)
@@ -163,6 +180,8 @@ const agendamentosFiltrados = computed(() => {
         agendamento.pacienteNome,
         agendamento.profissionalNome,
         agendamento.status,
+        agendamento.tipoAtendimento,
+        rotuloTipoAtendimento(agendamento.tipoAtendimento),
         agendamento.motivoCancelamento,
         formatarData(agendamento.dataHora),
         areaProfissional,
@@ -310,6 +329,7 @@ async function salvarAgendamento() {
         pacienteId: Number(agendamentoForm.pacienteId),
         profissionalId: Number(agendamentoForm.profissionalId),
         dataHora: agendamentoForm.dataHora,
+        tipoAtendimento: agendamentoForm.tipoAtendimento,
       }),
     })
     fecharModalAgendamento()
@@ -318,13 +338,13 @@ async function salvarAgendamento() {
 }
 
 function abrirModalAgendamento() {
-  Object.assign(agendamentoForm, { pacienteId: '', profissionalId: '', dataHora: '' })
+  Object.assign(agendamentoForm, { pacienteId: '', profissionalId: '', dataHora: '', tipoAtendimento: '' })
   agendamentoModalAberto.value = true
 }
 
 function fecharModalAgendamento() {
   agendamentoModalAberto.value = false
-  Object.assign(agendamentoForm, { pacienteId: '', profissionalId: '', dataHora: '' })
+  Object.assign(agendamentoForm, { pacienteId: '', profissionalId: '', dataHora: '', tipoAtendimento: '' })
 }
 
 async function buscarAgendamentos() {
@@ -445,6 +465,14 @@ function rotuloArea(valor) {
   return areasProfissionais.find((area) => area.value === valor)?.label || valor
 }
 
+function rotuloTipoAtendimento(valor) {
+  return tiposAtendimento.find((tipo) => tipo.value === valor)?.label || valor
+}
+
+function profissionalRealizaExames(profissional) {
+  return ['BIOMEDICINA', 'ENFERMAGEM'].includes(profissional.area)
+}
+
 function normalizar(valor) {
   return String(valor ?? '')
     .normalize('NFD')
@@ -551,7 +579,7 @@ onMounted(carregarDados)
             <span>Busca</span>
             <input
               v-model="filtros.texto"
-              placeholder="Paciente, profissional, status ou área"
+              placeholder="Paciente, profissional, tipo, status ou área"
               type="search"
             />
           </label>
@@ -623,6 +651,7 @@ onMounted(carregarDados)
                   <th>Data</th>
                   <th>Paciente</th>
                   <th>Profissional</th>
+                  <th>Tipo</th>
                   <th>Status</th>
                   <th>Motivo</th>
                   <th></th>
@@ -634,6 +663,7 @@ onMounted(carregarDados)
                   <td>{{ formatarData(agendamento.dataHora) }}</td>
                   <td>{{ agendamento.pacienteNome }}</td>
                   <td>{{ agendamento.profissionalNome }}</td>
+                  <td>{{ rotuloTipoAtendimento(agendamento.tipoAtendimento) }}</td>
                   <td>
                     <span class="badge" :class="agendamento.status.toLowerCase()">
                       {{ agendamento.status }}
@@ -867,11 +897,20 @@ onMounted(carregarDados)
             </select>
           </label>
           <label>
+            <span>Tipo de atendimento</span>
+            <select v-model="agendamentoForm.tipoAtendimento" required @change="agendamentoForm.profissionalId = ''">
+              <option value="">Selecione</option>
+              <option v-for="tipo in tiposAtendimento" :key="tipo.value" :value="tipo.value">
+                {{ tipo.label }}
+              </option>
+            </select>
+          </label>
+          <label>
             <span>Profissional</span>
             <select v-model="agendamentoForm.profissionalId" required>
               <option value="">Selecione</option>
               <option
-                v-for="profissional in profissionaisAtivos"
+                v-for="profissional in profissionaisDisponiveisParaAgendamento"
                 :key="profissional.id"
                 :value="profissional.id"
               >

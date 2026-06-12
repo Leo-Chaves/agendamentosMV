@@ -26,6 +26,7 @@ import com.projeto.agendamentosMV.entity.Paciente;
 import com.projeto.agendamentosMV.entity.Profissional;
 import com.projeto.agendamentosMV.entity.Sexo;
 import com.projeto.agendamentosMV.entity.StatusAgendamento;
+import com.projeto.agendamentosMV.entity.TipoAtendimento;
 import com.projeto.agendamentosMV.repository.AgendamentoRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -68,14 +69,76 @@ class AgendamentoServiceTest {
             return agendamento;
         });
 
-        Agendamento resultado = agendamentoService.agendar(1L, 1L, dataHora);
+        Agendamento resultado = agendamentoService.agendar(1L, 1L, dataHora, TipoAtendimento.CONSULTA);
 
         assertEquals(1L, resultado.getId());
         assertEquals(dataHora, resultado.getDataHora());
         assertSame(paciente, resultado.getPaciente());
         assertSame(profissional, resultado.getProfissional());
+        assertEquals(TipoAtendimento.CONSULTA, resultado.getTipoAtendimento());
         assertEquals(StatusAgendamento.AGENDADO, resultado.getStatus());
         verify(agendamentoRepository).save(any(Agendamento.class));
+    }
+
+    @Test
+    void deveCriarExameQuandoProfissionalForBiomedico() {
+        LocalDateTime dataHora = LocalDateTime.of(2026, 7, 10, 14, 0);
+        Paciente paciente = new Paciente(1L, "Maria Silva", "12345678900", LocalDate.of(1996, 1, 1), Sexo.FEMININO, "Rua A", List.of());
+        Profissional profissional = new Profissional(1L, "Bia Ramos", "CRBM12345", AreaProfissional.BIOMEDICINA, List.of());
+
+        when(pacienteService.buscarPorId(1L)).thenReturn(paciente);
+        when(profissionalService.buscarPorId(1L)).thenReturn(profissional);
+        when(agendamentoRepository.existsByPacienteIdAndStatusAndDataHoraAfterAndDataHoraBefore(
+                1L,
+                StatusAgendamento.AGENDADO,
+                dataHora.minusMinutes(30),
+                dataHora.plusMinutes(30)))
+                .thenReturn(false);
+        when(agendamentoRepository.existsByProfissionalIdAndStatusAndDataHoraAfterAndDataHoraBefore(
+                1L,
+                StatusAgendamento.AGENDADO,
+                dataHora.minusMinutes(30),
+                dataHora.plusMinutes(30))).thenReturn(false);
+        when(agendamentoRepository.save(any(Agendamento.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        Agendamento resultado = agendamentoService.agendar(1L, 1L, dataHora, TipoAtendimento.EXAME);
+
+        assertEquals(TipoAtendimento.EXAME, resultado.getTipoAtendimento());
+        verify(agendamentoRepository).save(any(Agendamento.class));
+    }
+
+    @Test
+    void deveLancarErroQuandoExameForAgendadoComProfissionalMedico() {
+        LocalDateTime dataHora = LocalDateTime.of(2026, 7, 10, 14, 0);
+        Paciente paciente = new Paciente(1L, "Maria Silva", "12345678900", LocalDate.of(1996, 1, 1), Sexo.FEMININO, "Rua A", List.of());
+        Profissional profissional = new Profissional(1L, "Ana Costa", "CRM12345", AreaProfissional.CARDIOLOGIA, List.of());
+
+        when(pacienteService.buscarPorId(1L)).thenReturn(paciente);
+        when(profissionalService.buscarPorId(1L)).thenReturn(profissional);
+
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> agendamentoService.agendar(1L, 1L, dataHora, TipoAtendimento.EXAME));
+
+        assertEquals("Exames devem ser agendados com profissional de biomedicina ou enfermagem.", exception.getMessage());
+        verify(agendamentoRepository, never()).save(any(Agendamento.class));
+    }
+
+    @Test
+    void deveLancarErroQuandoConsultaForAgendadaComProfissionalDeExame() {
+        LocalDateTime dataHora = LocalDateTime.of(2026, 7, 10, 14, 0);
+        Paciente paciente = new Paciente(1L, "Maria Silva", "12345678900", LocalDate.of(1996, 1, 1), Sexo.FEMININO, "Rua A", List.of());
+        Profissional profissional = new Profissional(1L, "Bia Ramos", "CRBM12345", AreaProfissional.BIOMEDICINA, List.of());
+
+        when(pacienteService.buscarPorId(1L)).thenReturn(paciente);
+        when(profissionalService.buscarPorId(1L)).thenReturn(profissional);
+
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> agendamentoService.agendar(1L, 1L, dataHora, TipoAtendimento.CONSULTA));
+
+        assertEquals("Consultas, retornos e avaliacoes devem ser agendados com as demais areas profissionais.", exception.getMessage());
+        verify(agendamentoRepository, never()).save(any(Agendamento.class));
     }
 
     @Test
@@ -95,7 +158,7 @@ class AgendamentoServiceTest {
 
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> agendamentoService.agendar(1L, 1L, dataHora));
+                () -> agendamentoService.agendar(1L, 1L, dataHora, TipoAtendimento.CONSULTA));
 
         assertEquals("Paciente já possui agendamento neste horário.", exception.getMessage());
         verify(agendamentoRepository, never()).save(any(Agendamento.class));
@@ -118,7 +181,7 @@ class AgendamentoServiceTest {
 
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> agendamentoService.agendar(1L, 2L, dataHora));
+                () -> agendamentoService.agendar(1L, 2L, dataHora, TipoAtendimento.CONSULTA));
 
         assertEquals("Paciente já possui agendamento neste horário.", exception.getMessage());
         verify(agendamentoRepository, never()).save(any(Agendamento.class));
@@ -135,7 +198,7 @@ class AgendamentoServiceTest {
 
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> agendamentoService.agendar(1L, 1L, dataHora));
+                () -> agendamentoService.agendar(1L, 1L, dataHora, TipoAtendimento.CONSULTA));
 
         assertEquals("Não é possível agendar para uma data passada.", exception.getMessage());
         verify(agendamentoRepository, never()).save(any(Agendamento.class));
@@ -163,7 +226,7 @@ class AgendamentoServiceTest {
 
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> agendamentoService.agendar(1L, 1L, dataHora));
+                () -> agendamentoService.agendar(1L, 1L, dataHora, TipoAtendimento.CONSULTA));
 
         assertEquals("Profissional já possui agendamento neste horário.", exception.getMessage());
         verify(agendamentoRepository, never()).save(any(Agendamento.class));
@@ -191,7 +254,7 @@ class AgendamentoServiceTest {
 
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> agendamentoService.agendar(1L, 1L, dataHora));
+                () -> agendamentoService.agendar(1L, 1L, dataHora, TipoAtendimento.CONSULTA));
 
         assertEquals("Profissional já possui agendamento neste horário.", exception.getMessage());
         verify(agendamentoRepository, never()).save(any(Agendamento.class));
@@ -209,7 +272,7 @@ class AgendamentoServiceTest {
 
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> agendamentoService.agendar(1L, 1L, dataHora));
+                () -> agendamentoService.agendar(1L, 1L, dataHora, TipoAtendimento.CONSULTA));
 
         assertEquals("Paciente inativo não pode receber agendamento.", exception.getMessage());
         verify(agendamentoRepository, never()).save(any(Agendamento.class));
@@ -227,7 +290,7 @@ class AgendamentoServiceTest {
 
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> agendamentoService.agendar(1L, 1L, dataHora));
+                () -> agendamentoService.agendar(1L, 1L, dataHora, TipoAtendimento.CONSULTA));
 
         assertEquals("Profissional inativo não pode receber agendamento.", exception.getMessage());
         verify(agendamentoRepository, never()).save(any(Agendamento.class));

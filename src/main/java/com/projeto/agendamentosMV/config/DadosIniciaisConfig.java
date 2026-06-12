@@ -14,6 +14,7 @@ import com.projeto.agendamentosMV.entity.Paciente;
 import com.projeto.agendamentosMV.entity.Profissional;
 import com.projeto.agendamentosMV.entity.Sexo;
 import com.projeto.agendamentosMV.entity.StatusAgendamento;
+import com.projeto.agendamentosMV.entity.TipoAtendimento;
 import com.projeto.agendamentosMV.repository.AgendamentoRepository;
 import com.projeto.agendamentosMV.repository.PacienteRepository;
 import com.projeto.agendamentosMV.repository.ProfissionalRepository;
@@ -50,18 +51,19 @@ public class DadosIniciaisConfig {
             Profissional marcos = novoProfissional("Dr. Marcos Vieira", "CRM1002", AreaProfissional.CLINICO_GERAL);
             Profissional helena = novoProfissional("Dra. Helena Prado", "CRM1003", AreaProfissional.PEDIATRIA);
             Profissional rafael = novoProfissional("Dr. Rafael Nunes", "CRM1004", AreaProfissional.FISIOTERAPIA);
+            Profissional bia = novoProfissional("Bia Ramos", "CRBM1005", AreaProfissional.BIOMEDICINA);
 
-            profissionalRepository.saveAll(List.of(lara, marcos, helena, rafael));
+            profissionalRepository.saveAll(List.of(lara, marcos, helena, rafael, bia));
 
             LocalDateTime amanha = LocalDateTime.now().plusDays(1).withSecond(0).withNano(0);
 
-            Agendamento agendamentoAna = novoAgendamento(ana, lara, amanha.withHour(9).withMinute(0),
+            Agendamento agendamentoAna = novoAgendamento(ana, lara, amanha.withHour(9).withMinute(0), TipoAtendimento.CONSULTA,
                     StatusAgendamento.AGENDADO, null);
-            Agendamento agendamentoBruno = novoAgendamento(bruno, marcos, amanha.withHour(10).withMinute(0),
+            Agendamento agendamentoBruno = novoAgendamento(bruno, marcos, amanha.withHour(10).withMinute(0), TipoAtendimento.RETORNO,
                     StatusAgendamento.AGENDADO, null);
-            Agendamento agendamentoCarla = novoAgendamento(carla, helena, amanha.plusDays(1).withHour(11).withMinute(0),
+            Agendamento agendamentoCarla = novoAgendamento(carla, helena, amanha.plusDays(1).withHour(11).withMinute(0), TipoAtendimento.AVALIACAO,
                     StatusAgendamento.AGENDADO, null);
-            Agendamento agendamentoDiego = novoAgendamento(diego, rafael, amanha.plusDays(2).withHour(14).withMinute(0),
+            Agendamento agendamentoDiego = novoAgendamento(diego, bia, amanha.plusDays(2).withHour(14).withMinute(0), TipoAtendimento.EXAME,
                     StatusAgendamento.CANCELADO, "Paciente solicitou remarcacao.");
 
             agendamentoRepository.saveAll(List.of(
@@ -96,12 +98,14 @@ public class DadosIniciaisConfig {
             Paciente paciente,
             Profissional profissional,
             LocalDateTime dataHora,
+            TipoAtendimento tipoAtendimento,
             StatusAgendamento status,
             String motivoCancelamento) {
         Agendamento agendamento = new Agendamento();
         agendamento.setPaciente(paciente);
         agendamento.setProfissional(profissional);
         agendamento.setDataHora(dataHora);
+        agendamento.setTipoAtendimento(tipoAtendimento);
         agendamento.setStatus(status);
         agendamento.setMotivoCancelamento(motivoCancelamento);
         return agendamento;

@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import com.projeto.agendamentosMV.entity.Agendamento;
 import com.projeto.agendamentosMV.entity.StatusAgendamento;
+import com.projeto.agendamentosMV.entity.TipoAtendimento;
 
 public record AgendamentoResponse(
         Long id,
@@ -12,6 +13,7 @@ public record AgendamentoResponse(
         String pacienteNome,
         Long profissionalId,
         String profissionalNome,
+        TipoAtendimento tipoAtendimento,
         StatusAgendamento status,
         String motivoCancelamento) {
 
@@ -23,6 +25,7 @@ public record AgendamentoResponse(
                 agendamento.getPaciente().getNome(),
                 agendamento.getProfissional().getId(),
                 agendamento.getProfissional().getNome(),
+                agendamento.getTipoAtendimento(),
                 agendamento.getStatus(),
                 agendamento.getMotivoCancelamento());
     }

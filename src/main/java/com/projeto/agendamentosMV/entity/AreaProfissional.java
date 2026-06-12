@@ -6,5 +6,7 @@ public enum AreaProfissional {
     ORTOPEDIA,
     PSICOLOGIA,
     PEDIATRIA,
-    FISIOTERAPIA
+    FISIOTERAPIA,
+    BIOMEDICINA,
+    ENFERMAGEM
 }

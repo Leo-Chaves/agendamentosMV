@@ -214,7 +214,8 @@ POST /agendamentos
 {
   "pacienteId": 1,
   "profissionalId": 1,
-  "dataHora": "2026-07-10T14:00:00"
+  "dataHora": "2026-07-10T14:00:00",
+  "tipoAtendimento": "CONSULTA"
 }
 ```
 
@@ -266,12 +267,14 @@ PATCH /agendamentos/{id}/realizar
 - Cancelamentos registram motivo e mudam o status para `CANCELADO`.
 - Agendamentos com status `AGENDADO` podem ser marcados como `REALIZADO`.
 - Agendamentos cancelados ou realizados são mantidos como histórico.
+- Exames só podem ser agendados com profissionais de biomedicina ou enfermagem.
+- Consulta, retorno e avaliação devem ser agendados com as demais áreas profissionais.
 - A listagem de agendamentos permite filtro por paciente, profissional ou status.
 - Pacientes e profissionais são inativados logicamente, sem remoção física.
 - Pacientes e profissionais inativos podem ser ativados novamente.
 - Os dados cadastrais de pacientes e profissionais podem ser atualizados sem alterar o histórico.
 - Pacientes armazenam data de nascimento; a idade é calculada na resposta da API.
-- Sexo e área profissional usam enums para evitar variações de digitação.
+- Sexo, área profissional e tipo de atendimento usam enums para evitar variações de digitação.
 - Pacientes ou profissionais inativos não podem receber novos agendamentos.
 
 Valores de `sexo`:
@@ -283,7 +286,13 @@ MASCULINO, FEMININO, OUTRO, NAO_INFORMADO
 Valores de `area`:
 
 ```text
-CLINICO_GERAL, CARDIOLOGIA, ORTOPEDIA, PSICOLOGIA, PEDIATRIA, FISIOTERAPIA
+CLINICO_GERAL, CARDIOLOGIA, ORTOPEDIA, PSICOLOGIA, PEDIATRIA, FISIOTERAPIA, BIOMEDICINA, ENFERMAGEM
+```
+
+Valores de `tipoAtendimento`:
+
+```text
+CONSULTA, RETORNO, EXAME, AVALIACAO
 ```
 
 ## Decisões técnicas

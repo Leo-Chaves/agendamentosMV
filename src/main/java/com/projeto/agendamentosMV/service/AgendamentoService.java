@@ -8,9 +8,11 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.projeto.agendamentosMV.entity.Agendamento;
+import com.projeto.agendamentosMV.entity.AreaProfissional;
 import com.projeto.agendamentosMV.entity.Paciente;
 import com.projeto.agendamentosMV.entity.Profissional;
 import com.projeto.agendamentosMV.entity.StatusAgendamento;
+import com.projeto.agendamentosMV.entity.TipoAtendimento;
 import com.projeto.agendamentosMV.repository.AgendamentoRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -26,19 +28,21 @@ public class AgendamentoService {
     @Value("${agendamento.duracao-minutos:30}")
     private long duracaoMinutos = 30;
 
-    public Agendamento agendar(Long pacienteId, Long profissionalId, LocalDateTime dataHora) {
+    public Agendamento agendar(Long pacienteId, Long profissionalId, LocalDateTime dataHora, TipoAtendimento tipoAtendimento) {
         Paciente paciente = pacienteService.buscarPorId(pacienteId);
         Profissional profissional = profissionalService.buscarPorId(profissionalId);
 
         validarPacienteAtivo(paciente);
         validarProfissionalAtivo(profissional);
         validarDataHora(dataHora);
+        validarTipoAtendimento(profissional, tipoAtendimento);
         validarDisponibilidade(pacienteId, profissionalId, dataHora);
 
         Agendamento agendamento = new Agendamento();
         agendamento.setPaciente(paciente);
         agendamento.setProfissional(profissional);
         agendamento.setDataHora(dataHora);
+        agendamento.setTipoAtendimento(tipoAtendimento);
         agendamento.setStatus(StatusAgendamento.AGENDADO);
 
         return agendamentoRepository.save(agendamento);
@@ -115,6 +119,27 @@ public class AgendamentoService {
         if (motivoCancelamento == null || motivoCancelamento.isBlank()) {
             throw new IllegalArgumentException("Motivo do cancelamento deve ser informado.");
         }
+    }
+
+    private void validarTipoAtendimento(Profissional profissional, TipoAtendimento tipoAtendimento) {
+        if (tipoAtendimento == null) {
+            throw new IllegalArgumentException("Tipo de atendimento deve ser informado.");
+        }
+
+        boolean profissionalRealizaExames = profissionalRealizaExames(profissional);
+
+        if (tipoAtendimento == TipoAtendimento.EXAME && !profissionalRealizaExames) {
+            throw new IllegalArgumentException("Exames devem ser agendados com profissional de biomedicina ou enfermagem.");
+        }
+
+        if (tipoAtendimento != TipoAtendimento.EXAME && profissionalRealizaExames) {
+            throw new IllegalArgumentException("Consultas, retornos e avaliacoes devem ser agendados com as demais areas profissionais.");
+        }
+    }
+
+    private boolean profissionalRealizaExames(Profissional profissional) {
+        return profissional.getArea() == AreaProfissional.BIOMEDICINA
+                || profissional.getArea() == AreaProfissional.ENFERMAGEM;
     }
 
     private void validarAgendamentoPodeSerRealizado(Agendamento agendamento) {
